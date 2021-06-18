@@ -1,0 +1,155 @@
+:root {
+  --primary: #292e38;
+  --secondary: #d1d1d1;
+}
+
+.nav_container {
+  display: flex;
+  /* flex-direction: column; */
+  height: 60px;
+  background-color: var(--primary) !important;
+}
+
+.logo_container {
+  display: flex;
+  height: 60px;
+  width: 200px;
+  margin-left: 15px;
+  align-items: flex-end;
+}
+
+.logo_container_signPage {
+  display: flex;
+  height: 120px;
+  width: 400px;
+  align-items: flex-end;
+}
+
+.header_logo {
+  width: 100%;
+  object-fit: contain;
+  margin: 10px 5px 0 0;
+  height: 100%;
+}
+
+.nav_icon_container {
+  display: flex;
+  width: 300px;
+  justify-content: space-evenly;
+}
+
+.icon-name {
+  font-size: 13px;
+  color: var(--secondary);
+  max-width: 80px;
+  max-height: 15px;
+  overflow: hidden;
+}
+
+.nav_profile_icons {
+  max-width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.search-box {
+  display: flex;
+  width: 50%;
+  min-height: 35px;
+  max-height: 200px;
+}
+
+.search-box1 {
+  display: none;
+}
+
+/* .search-icon-container {
+  display: inline-flex;
+  width: 50px;
+  height: 33px;
+  margin-left: -10px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(82, 82, 82, 0.891);
+   border-left: 1px solid rgb(0, 0, 0); 
+} */
+
+.hdJvsH {
+  width: 100% !important;
+  /* height: 35px !important; */
+}
+
+/* .jZkBQk > .wrapper {
+  background-color: rgba(82, 82, 82, 0.891) !important;
+  color: var(--secondary) !important;
+  border: 1px solid transparent !important;
+}*/
+
+.fhmJc {
+  min-height: 35px !important;
+}
+
+/* .frjscc > input {
+  color: var(--secondary) !important;
+}
+
+.eOPJCx {
+  fill: #fff !important;
+}*/
+
+.bWZouD {
+  overflow: hidden !important;
+  max-height: 120px !important;
+}
+
+.bWZouD > ul > li:hover {
+  background-color: rgba(148, 148, 148, 0.391) !important;
+}
+
+@media only screen and (max-width: 480px) {
+  .nav_container {
+    height: 120px;
+  }
+
+  .header_logo {
+    width: 160px;
+    margin-top: 10px;
+  }
+
+  .search-box {
+    display: none;
+  }
+
+  .search-box1 {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    margin: 10px 5%;
+    min-height: 35px;
+    max-height: 200px;
+  }
+
+  .logo_container {
+    margin-left: 0;
+  }
+
+  .nav_icon_container {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  #upload span {
+    display: none;
+  }
+
+  #notifications {
+    display: none;
+  }
+
+  #account span {
+    display: none;
+  }
+}

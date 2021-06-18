@@ -1,0 +1,63 @@
+.picture-cont {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 250px;
+  width: 100%;
+  flex-direction: column;
+  background-position: center;
+  background-size: cover;
+}
+
+.camera-cont {
+  display: flex;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border-radius: 50%;
+  margin-bottom: -50px;
+  margin-left: auto;
+  cursor: pointer;
+  outline: none;
+}
+
+.avt-style {
+  height: 100px !important;
+  width: 100px !important;
+  font-size: 35px !important;
+  background-position: center;
+  background-size: cover;
+}
+
+.pencil {
+  background-color: #ffc074;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: -15px;
+  z-index: 99999;
+  cursor: pointer;
+  outline: none;
+}
+
+@media only screen and (max-width: 480px) {
+  .picture-cont {
+    height: 200px;
+  }
+
+  .camera-cont {
+    left: 80%;
+  }
+
+  .avt-style {
+    height: 80px !important;
+    width: 80px !important;
+    font-size: 25px !important;
+  }
+}

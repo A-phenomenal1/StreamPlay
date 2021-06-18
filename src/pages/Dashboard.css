@@ -1,0 +1,38 @@
+.layoutWrapper {
+  display: flex;
+  flex: 1 1 auto;
+  overflow: hidden;
+  padding-top: 64px;
+  padding-left: 256px;
+  min-height: calc(100vh - 65px);
+  background-color: #282828;
+  box-sizing: initial;
+}
+
+.no-padding-left {
+  padding-left: 0px !important;
+}
+
+.layoutContainer {
+  display: flex;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.layoutContent {
+  flex: 1 1 auto;
+  height: 100%;
+  overflow: auto;
+}
+
+.hide {
+  display: none;
+}
+
+@media only screen and (max-width: 480px) {
+  .layoutWrapper {
+    padding-left: 0;
+    padding-top: 125px;
+    min-height: calc(100vh - 125px);
+  }
+}

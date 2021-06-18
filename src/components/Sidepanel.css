@@ -1,0 +1,32 @@
+:root {
+  --primary: #292e38;
+  --secondary: #eaeaea;
+}
+
+.sidepanel-cont {
+  display: flex;
+  height: 100%;
+  font-family: sans-serif;
+  background-color: var(--primary) !important;
+}
+
+.hideSidepanel {
+  display: none;
+}
+
+.copyright {
+  text-align: center;
+  font-size: 13px;
+  color: #eaeaea;
+  margin-top: 1em;
+}
+
+@media only screen and (max-width: 480px) {
+  .hideSidepanel {
+    display: inline-flex;
+  }
+
+  .showSidepanel {
+    display: none;
+  }
+}

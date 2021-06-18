@@ -1,0 +1,82 @@
+.help-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.logo_container_helpPage {
+  height: 100px;
+  width: 100px;
+  margin-bottom: -100px;
+  background-color: rgb(255, 255, 255, 0.9);
+  border-radius: 50%;
+}
+
+.search-box2 {
+  margin: -170px auto;
+  width: 50%;
+  min-height: 30px;
+  max-height: 200px;
+}
+
+.help-text {
+  position: absolute;
+  margin-top: 100px !important;
+  color: #f5b641;
+  z-index: 99;
+  cursor: pointer;
+}
+
+.accord-wth {
+  width: 70%;
+}
+
+.accord-cont {
+  display: flex;
+  margin-top: 350px;
+  margin-bottom: 30px;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  cursor: pointer;
+}
+
+.accord-subitem {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgb(102, 102, 102);
+  color: rgb(103, 103, 253);
+}
+
+@media only screen and (max-width: 480px) {
+  .search-box2 {
+    position: relative;
+    margin: 170px 0 auto 0;
+    width: 100%;
+    z-index: 999;
+  }
+
+  svg {
+    display: none;
+  }
+
+  .help-text {
+    font-size: 25px !important;
+    margin-top: 120px !important;
+    z-index: 99;
+  }
+
+  .accord-wth {
+    width: 100%;
+  }
+
+  .accord-cont {
+    margin-top: 50px;
+    margin-bottom: 30px;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    cursor: pointer;
+  }
+}

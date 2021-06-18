@@ -1,0 +1,25 @@
+.user-cont {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 2em auto;
+  width: 350px;
+}
+
+.block {
+  display: flex;
+  color: #d1d1d1;
+  justify-content: space-between;
+  width: 80%;
+  font-size: 17px;
+  padding: 8px 0;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  text-transform: capitalize;
+}
+
+.subtitle-title {
+  display: flex;
+  margin: 8px 16px;
+  color: #fff;
+}

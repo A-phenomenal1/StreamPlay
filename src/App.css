@@ -1,38 +1,91 @@
-.App {
-  text-align: center;
+.underline {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #515152;
+  /* background-color: #555577; */
+  margin: 5px 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.header_logo {
+  width: 100%;
+  object-fit: contain;
+  margin: 10px 5px 0 0;
+  height: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.loader {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: absolute;
+  width: 100vw;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  height: 80vh;
 }
 
-.App-link {
-  color: #61dafb;
+.underline2 {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: #3a3a3a;
+  margin: 5px 0;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.vids-container {
+  display: flex;
+  flex-direction: row;
+  overflow: auto hidden;
+  align-items: center;
+}
+
+.vids-container1 {
+  display: flex;
+  flex-direction: row;
+  overflow: auto hidden;
+  align-items: center;
+}
+
+.vids-container2 {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  overflow: hidden;
+  align-items: center;
+}
+
+.filterbtn {
+  display: flex;
+  min-width: 100px;
+  border: 1px solid grey;
+  color: #e8e8e8;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 24px;
+  margin: 5px 15px;
+  box-shadow: 1px 1px 3px rgb(163, 163, 163);
+  cursor: pointer;
+}
+
+.filterbtn:hover {
+  font-size: 15px;
+}
+
+.active {
+  background-color: #374154;
+}
+
+.if-no-data-in-library {
+  height: 130px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+@media only screen and (max-width: 480px) {
+  .vids-container {
+    flex-direction: column;
   }
-  to {
-    transform: rotate(360deg);
+
+  .vids-container2 {
+    padding: 0 5%;
   }
 }

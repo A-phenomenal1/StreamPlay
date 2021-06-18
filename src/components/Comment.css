@@ -1,0 +1,58 @@
+.avt-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 20px;
+}
+
+.time-text {
+  font-size: 13px;
+  color: #dbcbbd;
+  margin-left: 8px;
+}
+
+.icons-container {
+  width: 130px;
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0.7em;
+  align-items: center;
+}
+
+.thumb-icon {
+  font-size: 20px;
+  color: #b1b493;
+  cursor: pointer;
+}
+
+.reply-icon {
+  font-size: 14px;
+  color: #b1b493;
+  cursor: pointer;
+}
+
+.read-more-icon {
+  font-size: 12px;
+  color: #b1b493;
+  margin-left: 0.7em;
+  cursor: pointer;
+  width: 70px;
+}
+
+.line-after3 {
+  -webkit-line-clamp: 3;
+}
+.line-after1 {
+  -webkit-line-clamp: 1;
+}
+
+.tooltip {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.3;
+}
+
+.hide-btn-cont {
+  display: flex;
+  justify-content: flex-end;
+}
