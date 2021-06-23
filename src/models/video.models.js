@@ -112,17 +112,9 @@ function makeVideo(videoInfo = requiredParam("videoInfo")) {
   }
 
   function normalize({
-    writer,
     title,
     description,
-    privacy,
-    filePath,
-    views,
-    likes,
-    dislikes,
     duration,
-    thumbnail,
-    category,
     updatedAt,
     ...otherInfo
   }) {
@@ -131,14 +123,6 @@ function makeVideo(videoInfo = requiredParam("videoInfo")) {
       title: upperFirst(title),
       description: upperFirst(description),
       duration: formatDuration(duration),
-      writer,
-      privacy,
-      filePath,
-      views,
-      likes,
-      dislikes,
-      thumbnail,
-      category,
       ...otherInfo,
     };
   }

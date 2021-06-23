@@ -79,7 +79,6 @@ function makeUserList() {
   async function findByEmail({ email }) {
     const db = await database;
     const results = await db.collection("users").find({ email }).toArray();
-    delete results["password"];
     return JSON.parse(JSON.stringify(results));
   }
 
@@ -114,7 +113,7 @@ function makeUserList() {
         }
       );
       return {
-        success: 204,
+        success: 200,
         result: "Profile updated...",
       };
     } catch (e) {
@@ -165,6 +164,14 @@ function makeUserList() {
         ],
       };
 
+      transporter.verify(function (error, success) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Server is ready to take our messages");
+        }
+      });
+
       let result = await transporter.sendMail(mailOptions);
       await transporter.sendMail(replymailOptions);
       return {
@@ -181,24 +188,40 @@ function makeUserList() {
 
   //------------------------------------------------------------
 
-  async function update({ userId, updateKey, newValue }) {
+  async function update({ isPresent, userId, updateKey, newValue }) {
     const db = await database;
     let result;
     try {
       if (updateKey === "subscribedTo") {
-        await db
-          .collection("users")
-          .updateOne(
-            { _id: db.makeId(userId) },
-            { $push: { subscribedTo: { $each: [newValue] } } }
-          );
+        if (isPresent)
+          await db
+            .collection("users")
+            .updateOne(
+              { _id: db.makeId(userId) },
+              { $pull: { subscribedTo: { $in: [newValue] } } }
+            );
+        else
+          await db
+            .collection("users")
+            .updateOne(
+              { _id: db.makeId(userId) },
+              { $push: { subscribedTo: { $each: [newValue] } } }
+            );
       } else if (updateKey === "subscribedBy") {
-        await db
-          .collection("users")
-          .updateOne(
-            { _id: db.makeId(userId) },
-            { $push: { subscribedBy: { $each: [newValue] } } }
-          );
+        if (isPresent)
+          await db
+            .collection("users")
+            .updateOne(
+              { _id: db.makeId(userId) },
+              { $pull: { subscribedBy: { $in: [newValue] } } }
+            );
+        else
+          await db
+            .collection("users")
+            .updateOne(
+              { _id: db.makeId(userId) },
+              { $push: { subscribedBy: { $each: [newValue] } } }
+            );
       }
       result = await db.collection("users").findOne({ _id: db.makeId(userId) });
     } catch (e) {
@@ -223,10 +246,10 @@ function makeUserList() {
 
   //------------------------------------------------------------
 
-  async function replaceWriters({ userId, newUser }) {
+  async function replaceWriters({ collection, userId, newUser }) {
     const db = await database;
     let results = await db
-      .collection("videos")
+      .collection(collection)
       .updateMany(
         { "writer._id": userId },
         { $set: { writer: newUser } },

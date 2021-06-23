@@ -21,7 +21,8 @@ function makeAuthUsersEndpointHandler({ userList }) {
           return updateProfile(httpRequest);
         } else if (httpRequest.path === "/updatevideowriter") {
           return updateVideoWriter(httpRequest);
-        }
+        } else if (httpRequest.path === "/updatecommentwriter")
+          return updateCommentWriter(httpRequest);
         break;
 
       default:
@@ -95,9 +96,10 @@ function makeAuthUsersEndpointHandler({ userList }) {
 
   async function updateVideoWriter(httpRequest) {
     const userId = decodeToken(httpRequest.user.id);
-    console.log("user: ", httpRequest.body);
+    console.log("user in update video writer: ", httpRequest.body);
     if (userId) {
       const result = await userList.replaceWriters({
+        collection: "videos",
         userId,
         newUser: httpRequest.body,
       });
@@ -105,7 +107,30 @@ function makeAuthUsersEndpointHandler({ userList }) {
         headers: {
           "Content-Type": "application/json",
         },
-        statusCode: 204,
+        statusCode: 200,
+        data: JSON.stringify(result),
+      };
+    }
+    return {
+      statusCode: 500,
+      data: "user updation not successfull",
+    };
+  }
+
+  async function updateCommentWriter(httpRequest) {
+    const userId = decodeToken(httpRequest.user.id);
+    console.log("user in update comment writer: ", httpRequest.body);
+    if (userId) {
+      const result = await userList.replaceWriters({
+        collection: "comments",
+        userId,
+        newUser: httpRequest.body,
+      });
+      return {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        statusCode: 200,
         data: JSON.stringify(result),
       };
     }

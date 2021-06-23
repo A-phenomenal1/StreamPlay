@@ -8,6 +8,7 @@ function makeVideoList() {
     getVideoByPrivacy,
     getVideoByUser,
     getVideoByTrend,
+    getVideoByFilter,
     findById,
     findByTitle,
     updateThumbEvents,
@@ -21,6 +22,11 @@ function makeVideoList() {
     if (videoId) {
       video._id = db.makeId(videoId);
     }
+    delete video.writer.password;
+    delete video.writer.email;
+    delete video.writer.subscribedTo;
+    delete video.writer.likedVideos;
+    delete video.writer.likedComments;
 
     const { result, ops } = await db
       .collection("videos")
@@ -63,6 +69,50 @@ function makeVideoList() {
     results.results = await db
       .collection("videos")
       .find({ privacy: "Public" })
+      .limit(limit)
+      .skip(startIndex)
+      .toArray()
+      .catch((error) => {
+        return {
+          success: 500,
+          error: error,
+        };
+      });
+    return {
+      success: 200,
+      videos: results,
+    };
+  }
+
+  //------------------------------------------------------------
+
+  async function getVideoByFilter(filter, p, l) {
+    const db = await database;
+    const size = await db.collection("videos").countDocuments();
+    const page = parseInt(p);
+    const limit = parseInt(l);
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    console.log("filter:", filter);
+
+    const results = {};
+
+    if (endIndex < size) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+    if (startIndex > 0) {
+      results.previous = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+
+    results.results = await db
+      .collection("videos")
+      .find({ category: filter })
       .limit(limit)
       .skip(startIndex)
       .toArray()
@@ -139,44 +189,42 @@ function makeVideoList() {
         {
           $addFields: {
             difference: {
-              $divide: [
-                {
-                  $subtract: ["$currentTime", "$creationTime"],
-                },
-                3600000,
-              ],
+              // $divide: [
+              // {
+              $subtract: ["$currentTime", "$creationTime"],
+              // },
+              // 3600000,
+              // ],
             },
           },
         },
         {
           $addFields: {
             secs_for_one_view: {
-              $trunc: {
-                $multiply: [
-                  {
-                    $cond: [
-                      { $eq: ["$views", 0] },
-                      Infinity,
-                      { $divide: ["$difference", "$views"] },
-                    ],
-                  },
-                  3600,
-                ],
-              },
+              $multiply: [
+                {
+                  $cond: [
+                    { $eq: ["$views", 0] },
+                    Infinity,
+                    { $divide: ["$difference", "$views"] },
+                  ],
+                },
+                3600,
+              ],
             },
           },
         },
         {
           $group: {
             _id: "$_id",
-            trend: {
+            time_in_sec: {
               $sum: "$secs_for_one_view",
             },
           },
         },
         {
           $sort: {
-            trend: 1,
+            time_in_sec: 1,
           },
         },
         {
@@ -186,7 +234,7 @@ function makeVideoList() {
       .toArray();
 
     let ids = [...trend.map((id) => id._id)];
-    console.log("ids: ", ids);
+    console.log("ids: ", trend);
 
     const results = await db
       .collection("videos")

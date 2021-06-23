@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ffmpeg = require("fluent-ffmpeg");
 const cors = require("cors");
+const cloudinary = require("cloudinary");
 const port = process.env.PORT || 3050;
 
 const {
@@ -13,6 +14,8 @@ const videoController = require("./controllers/video.controller");
 const commentController = require("./controllers/comment.controller");
 const upload = require("./api/middleware/video-upload");
 require("./db");
+require("dotenv").config();
+require("./config/cloudinary");
 
 const app = express();
 
@@ -44,29 +47,41 @@ app.post("/api/uploadprofilepic", upload.single("file"), userController);
 app.post("/api/uploadthumbnailfile", (req, res) => {
   let thumbsFilePath = "";
   let fileDuration = "";
+  let result;
+  console.log("req.body in uploadthumbnail: ", req.body);
 
-  ffmpeg.ffprobe(req.body.filePath, (err, metadata) => {
+  ffmpeg.ffprobe(req.body.filePathInDisk, (err, metadata) => {
     fileDuration = metadata.format.duration;
   });
 
-  ffmpeg(req.body.filePath)
+  ffmpeg(req.body.filePathInDisk)
     .on("progress", function (progress) {
       console.log("Processing: " + progress.percent + "% done");
     })
-    .on("filenames", function (filenames) {
+    .on("filenames", async function (filenames) {
       console.log("Will generate " + filenames.join(", "));
       thumbsFilePath = "uploads/thumbnails/" + filenames[0];
     })
     .on("error", function (err) {
       console.log("an error happened: " + err.message);
     })
-    .on("end", function () {
+    .on("end", async function () {
       console.log("Screenshots taken");
-      return res.json({
-        success: true,
-        thumbsFilePath: thumbsFilePath,
-        fileDuration: fileDuration,
-      });
+      try {
+        result = await cloudinary.v2.uploader.upload(thumbsFilePath);
+        console.log("result: ", result);
+        return res.json({
+          success: true,
+          thumbsFilePath: result.url,
+          fileDuration: fileDuration,
+        });
+      } catch (error) {
+        console.log("error in thumbnail upload", error);
+        return res.json({
+          success: false,
+          data: "error in thumbnail upload",
+        });
+      }
     })
     .screenshots({
       count: 1,

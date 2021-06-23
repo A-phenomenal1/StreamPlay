@@ -6,6 +6,7 @@ const {
 const makeHttpError = require("../../helpers/http-error");
 const makeVideo = require("../../models/video.models");
 const videoList = require("../../services/video.service");
+const cloudinary = require("cloudinary");
 
 function makeVideosEndpointHandler({ videoList }) {
   return async function handle(httpRequest) {
@@ -23,6 +24,8 @@ function makeVideosEndpointHandler({ videoList }) {
           return getAllVideo(httpRequest);
         else if (httpRequest.path === "/gettrendvideos")
           return getTrendVideos();
+        else if (httpRequest.path === "/getfiltervideos")
+          return getFilterVideos(httpRequest);
         else if (httpRequest.path === "/searchvideo")
           return searchVideo(httpRequest);
         else if (httpRequest.path === "/searchvideobysubs")
@@ -115,22 +118,31 @@ function makeVideosEndpointHandler({ videoList }) {
 
   async function uploadVideoFile(httpRequest) {
     if (httpRequest.file !== undefined) {
-      return {
-        statusCode: 200,
-        data: JSON.stringify({
-          success: 200,
-          filePath: httpRequest.file.path,
-          fileName: httpRequest.file.filename,
-        }),
-      };
+      try {
+        const result = await cloudinary.v2.uploader.upload(
+          httpRequest.file.path,
+          { resource_type: "video" }
+        );
+        console.log("result:", result);
+        return {
+          statusCode: 200,
+          data: JSON.stringify({
+            success: 200,
+            filePath: result.url,
+            fileName: result.original_filename,
+            filePathInDisk: httpRequest.file.path,
+          }),
+        };
+      } catch (error) {
+        return {
+          statusCode: 500,
+          data: {
+            success: 500,
+            error: `failed to upload video!!!. Error: ${error}`,
+          },
+        };
+      }
     }
-    return {
-      statusCode: 500,
-      data: {
-        success: 500,
-        error: "failed to upload video!!!",
-      },
-    };
   }
 
   //------------------------------------------------------------
@@ -138,6 +150,21 @@ function makeVideosEndpointHandler({ videoList }) {
   async function getAllVideo(httpRequest) {
     const { page, limit } = httpRequest.queryParams || {};
     const result = await videoList.getVideoByPrivacy(page, limit);
+    return {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      statusCode: result.success,
+      data: result,
+    };
+  }
+
+  //-----------------------------------------------------------
+
+  async function getFilterVideos(httpRequest) {
+    const { filter, page, limit } = httpRequest.queryParams || {};
+    console.log(filter, page, limit);
+    const result = await videoList.getVideoByFilter(filter, page, limit);
     return {
       headers: {
         "Content-Type": "application/json",

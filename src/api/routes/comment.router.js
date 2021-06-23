@@ -21,6 +21,8 @@ function makeCommentsEndpointHandler({ commentList }) {
           return getAllComment(httpRequest);
 
       case "PATCH":
+        if (httpRequest.path === "/updateevents")
+          return updateEvents(httpRequest);
         break;
 
       default:
@@ -97,6 +99,31 @@ function makeCommentsEndpointHandler({ commentList }) {
             : 500,
       });
     }
+  }
+
+  //------------------------------------------------------------
+
+  async function updateEvents(httpRequest) {
+    const { id, userId } = httpRequest.queryParams || {};
+    const { newValue } = httpRequest.body;
+    console.log("in updateEvents function", newValue);
+
+    if (id) {
+      if (typeof newValue === "object")
+        result = await commentList.updateThumbEvents({
+          userId,
+          commentId: id,
+          newValue,
+        });
+      console.log({ result });
+    }
+    return {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      statusCode: result.success,
+      data: JSON.stringify(result),
+    };
   }
 
   //------------------------------------------------------------

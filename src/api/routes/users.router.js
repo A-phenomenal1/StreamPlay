@@ -8,6 +8,7 @@ const makeHttpError = require("../../helpers/http-error");
 const { createToken } = require("../../helpers/json-web-token");
 const makeUser = require("../../models/user.models");
 const userList = require("../../services/user.service");
+const cloudinary = require("cloudinary");
 
 function makeUsersEndpointHandler({ userList }) {
   return async function handle(httpRequest) {
@@ -52,6 +53,7 @@ function makeUsersEndpointHandler({ userList }) {
       delete result.email;
       delete result.subscribedTo;
       delete result.likedVideos;
+      delete result.likedComments;
       console.log("result: ", result);
     } else if (email) {
       result = await userList.findByEmail({ email });
@@ -139,7 +141,7 @@ function makeUsersEndpointHandler({ userList }) {
 
     try {
       result = await userList.findByEmail({ email: loginInfo.email });
-      console.log(result);
+      console.log("result: ", result);
       if (result.length === 0) {
         return makeHttpError({
           statusCode: 401,
@@ -181,22 +183,29 @@ function makeUsersEndpointHandler({ userList }) {
 
   async function uploadPic(httpRequest) {
     if (httpRequest.file !== undefined) {
-      return {
-        statusCode: 200,
-        data: JSON.stringify({
-          success: 200,
-          filePath: httpRequest.file.path,
-          fileName: httpRequest.file.filename,
-        }),
-      };
+      try {
+        const result = await cloudinary.v2.uploader.upload(
+          httpRequest.file.path
+        );
+        console.log("result: ", result);
+        return {
+          statusCode: 200,
+          data: JSON.stringify({
+            success: 200,
+            filePath: result.url,
+            fileName: result.original_filename,
+          }),
+        };
+      } catch (error) {
+        return {
+          statusCode: 500,
+          data: {
+            success: 500,
+            error: "failed to upload picture!!!",
+          },
+        };
+      }
     }
-    return {
-      statusCode: 500,
-      data: {
-        success: 500,
-        error: "failed to upload picture!!!",
-      },
-    };
   }
 
   //------------------------------------------------------------
@@ -221,11 +230,16 @@ function makeUsersEndpointHandler({ userList }) {
 
   async function updateSubscriberList(httpRequest) {
     const { id } = httpRequest.queryParams || {};
-    const { updateKey, newValue } = httpRequest.body;
+    const { isPresent, updateKey, newValue } = httpRequest.body;
     let result;
 
     if (id) {
-      result = await userList.update({ userId: id, updateKey, newValue });
+      result = await userList.update({
+        isPresent,
+        userId: id,
+        updateKey,
+        newValue,
+      });
       console.log({ result });
     }
     return {
