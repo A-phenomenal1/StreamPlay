@@ -1,0 +1,147 @@
+@import url("https://fonts.googleapis.com/css2?family=Alex+Brush&family=Bad+Script&family=Crimson+Text&&display=swap");
+
+.top-container {
+  display: flex;
+  width: 100%;
+  height: 200px;
+  background-image: url("https://res.cloudinary.com/immortal-0298/image/upload/v1624215126/vzciedke6yse4dvjmgsv.jpg");
+  background-position: center;
+  background-size: cover;
+  justify-content: center;
+  align-items: center;
+}
+
+.headline {
+  font-size: 35px;
+  color: #ffcc33;
+  text-transform: uppercase;
+  font-family: "Bad Script", cursive;
+}
+
+.about-text-cont1 {
+  display: flex;
+  margin: 3em auto;
+  width: 80%;
+  height: 100%;
+  padding: 5px;
+}
+
+.about-text1 {
+  color: #d1d1d1;
+  font-size: 21px;
+  font-family: "Crimson Text", serif;
+  line-height: 1.2;
+}
+
+.about-text-cont2 {
+  padding-left: 0.5em;
+}
+
+.about-text2 {
+  font-family: "Crimson Text", serif;
+  font-size: 19px;
+  color: #b9b8b8;
+}
+
+.main-cont {
+  display: flex;
+  margin: 2em 0;
+}
+
+.left-cont1 {
+  display: flex;
+  flex-direction: column;
+  flex: 0.6;
+  padding: 1em 5%;
+}
+
+.author-name {
+  font-size: 27px;
+  font-family: "Crimson Text", serif;
+  text-transform: uppercase;
+  color: #f50057;
+  margin-bottom: 0.5em;
+}
+
+.sub-name {
+  font-size: 20px;
+}
+
+.icon-container {
+  display: flex;
+  height: 80px;
+  width: 250px;
+  padding: 0 0.5em;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icon-box {
+  display: flex;
+  width: 55px;
+  height: 50px;
+}
+
+.icon {
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+}
+
+.icon:hover {
+  transform: scale(1.2, 1.2);
+  transition: 0.3s ease-in;
+}
+
+.author-img-cont {
+  display: flex;
+  flex-direction: column;
+  flex: 0.4;
+}
+
+.author-image {
+  filter: grayscale(50%);
+}
+.mysign {
+  display: flex;
+  color: #ffcc33;
+  text-transform: capitalize;
+  margin-top: -1.3em;
+  z-index: 99;
+  font-size: 50px;
+  width: 100%;
+  justify-content: center;
+  font-family: "Alex Brush", cursive;
+}
+
+@media only screen and (max-width: 480px) {
+  .headline {
+    font-size: 26px;
+  }
+
+  .about-text-cont1 {
+    width: 100%;
+  }
+
+  .left-cont1 {
+    flex: 1;
+    padding: 1em 0;
+  }
+
+  .icon-container {
+    width: 100%;
+    padding: 0 0.5em;
+    justify-content: space-evenly;
+  }
+
+  .author-name {
+    text-align: center;
+  }
+
+  .author-image {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+    border-radius: 50%;
+  }
+}

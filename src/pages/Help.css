@@ -57,7 +57,7 @@
     z-index: 999;
   }
 
-  svg {
+  .help-container > svg {
     display: none;
   }
 

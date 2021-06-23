@@ -6,6 +6,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import dev from "../api/dev";
 import "./SideMediaCard.css";
+import formatTimestamp from "../config/formatTimestamp";
 
 export default function SideMediacard({
   _id,
@@ -26,11 +27,7 @@ export default function SideMediacard({
 
   return (
     <Card className="root" onClick={changeVideo}>
-      <CardMedia
-        className="cover"
-        image={`${dev.BaseUrl}/${img}`}
-        title={title}
-      />
+      <CardMedia className="cover" image={`${img}`} title={title} />
       <div className="duration">{duration}</div>
       <div className="details">
         <CardContent className="content">
@@ -50,7 +47,7 @@ export default function SideMediacard({
               {category}
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
-              {views} Views - {date}
+              {views} Views - {formatTimestamp(date)}
             </Typography>
           </div>
         </CardContent>

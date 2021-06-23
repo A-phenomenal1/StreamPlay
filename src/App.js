@@ -3,15 +3,11 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { createMuiTheme } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 import { useStateValue } from "./config/StateProvider";
-import UploadVideoForm from "./pages/UploadVideoForm";
-import NavHeader from "./components/NavHeader";
 import Dashboard from "./pages/Dashboard";
-import VideoPage from "./pages/VideoPage";
 import SignIn from "./pages/Signin";
 import SignUp from "./pages/Signup";
 import dev from "./api/dev";
 import "./App.css";
-import Sidepanel from "./components/Sidepanel";
 
 const theme = createMuiTheme({
   palette: {

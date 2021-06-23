@@ -14,12 +14,12 @@ import {
 } from "@material-ui/core";
 import { CameraAlt, Create, Delete } from "@material-ui/icons";
 import { useStateValue } from "../config/StateProvider";
-import "./AccountSetting.css";
 import defaultCover from "../assets/texture.jpeg";
 import axios from "axios";
 import dev from "../api/dev";
 import Dropzone from "react-dropzone";
 import Loader from "../components/Loader";
+import "./AccountSetting.css";
 
 const AccountSettings = () => {
   const [{ user }, dispatch] = useStateValue();
@@ -110,45 +110,66 @@ const AccountSettings = () => {
             })
               .then((res) => res.json())
               .then((data) => {
+                // update the writer object of all video.
+                let updatedUser = {
+                  _id: data._id,
+                  color: data.color,
+                  firstName: data.firstName,
+                  lastName: data.lastName,
+                  profilePic: data.profilePic,
+                  coverPic: data.coverPic,
+                };
+                console.log("updateUser: ", updatedUser);
+
+                fetch(`${dev.BaseUrl}/authusers/updatecommentwriter`, {
+                  method: "PATCH",
+                  headers: {
+                    "auth-token": localStorage.getItem("JwtAuthToken"),
+                    "content-type": "application/json",
+                  },
+                  body: JSON.stringify({ ...updatedUser }),
+                })
+                  .then((res) => res.json())
+                  .then((data) => {
+                    if (data.success) {
+                      console.log("comments writer's updated: ", data);
+                    } else {
+                      console.log("Error: ", data.result);
+                    }
+                  })
+                  .catch((err) => {
+                    console.log("error: ", err);
+                  });
+
+                fetch(`${dev.BaseUrl}/authusers/updatevideowriter`, {
+                  method: "PATCH",
+                  headers: {
+                    "auth-token": localStorage.getItem("JwtAuthToken"),
+                    "content-type": "application/json",
+                  },
+                  body: JSON.stringify({ ...updatedUser }),
+                })
+                  .then((res) => res.json())
+                  .then((data) => {
+                    if (data.success) {
+                      console.log("video writer's updated: ", data);
+                      setLoading(false);
+                    } else {
+                      console.log("Error: ", data.result);
+                    }
+                  })
+                  .catch((err) => {
+                    console.log("error: ", err);
+                  });
                 dispatch({
                   type: "SET_USER",
                   user: [data],
                 });
-                setLoading(false);
                 console.log("Logged user: ", data);
               })
               .catch((err) => {
                 console.log("Error in jwt code ", err);
               });
-          }
-        })
-        .catch((err) => {
-          console.log("error: ", err);
-        });
-
-      // update the writer object of all video.
-      let updatedUser = {
-        _id: user[0]._id,
-        color: user[0].color,
-        firstName: user[0].firstName,
-        lastName: user[0].lastName,
-        profilePic: user[0].profilePic,
-        coverPic: user[0].coverPic,
-      };
-      await fetch(`${dev.BaseUrl}/authusers/updatevideowriter`, {
-        method: "PATCH",
-        headers: {
-          "auth-token": localStorage.getItem("JwtAuthToken"),
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ ...updatedUser }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            console.log("video writer's updated: ", data);
-          } else {
-            console.log("Error: ", data.result);
           }
         })
         .catch((err) => {
@@ -206,7 +227,7 @@ const AccountSettings = () => {
                 backgroundImage:
                   values.coverPic === null
                     ? `url(${defaultCover})`
-                    : `url(${dev.BaseUrl}/${values.coverPic})`,
+                    : `url(${values.coverPic})`,
               }}
             >
               {values.profilePic === null ? (
@@ -219,10 +240,7 @@ const AccountSettings = () => {
                   {user[0] && user[0].firstName[0]}
                 </Avatar>
               ) : (
-                <Avatar
-                  src={`${dev.BaseUrl}/${values.profilePic}`}
-                  className="avt-style"
-                />
+                <Avatar src={`${values.profilePic}`} className="avt-style" />
               )}
               <Dropzone
                 onDropAccepted={(file) => handleProfileChange(file, "Profile")}
@@ -246,8 +264,17 @@ const AccountSettings = () => {
                   user[0] && user[0].lastName
                 }`}
               </Typography>
-              <Typography color="textSecondary" variant="body1">
-                Email Id: {user[0] && user[0].email}
+              <Typography
+                color="textSecondary"
+                variant="body1"
+                style={{
+                  display: "flex",
+                  width: "93%",
+                  justifyContent: "center",
+                }}
+              >
+                Email Id:
+                <span className="control-char">{user[0] && user[0].email}</span>
               </Typography>
             </div>
           </Grid>

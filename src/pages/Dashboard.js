@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useStateValue } from "../config/StateProvider";
+import AccountSettings from "./AccountSettings";
+import NoDataPage from "../components/NoDataPage";
 import NavHeader from "../components/NavHeader";
 import Sidepanel from "../components/Sidepanel";
 import Subscription from "./Subscription";
@@ -11,13 +14,11 @@ import Temp from "../components/Temp";
 import HistoryPage from "./HistoryPage";
 import MyVideos from "./MyVideos";
 import LibraryPage from "./LibraryPage";
-import Home from "./Home";
-import "./Dashboard.css";
 import Contact from "./Contact";
 import Help from "./Help";
-import AccountSettings from "./AccountSettings";
-import { useStateValue } from "../config/StateProvider";
-import NoDataPage from "../components/NoDataPage";
+import Home from "./Home";
+import "./Dashboard.css";
+import AboutUs from "./AboutUs";
 
 const Dashboard = (props) => {
   const [{ user }, dispatch] = useStateValue();
@@ -30,18 +31,33 @@ const Dashboard = (props) => {
         return <Home />;
 
       case "Subscriptions":
+        if (user.length === 0) {
+          return <NoDataPage data="User" />;
+        }
         return <Subscription />;
 
       case "Library":
+        if (user.length === 0) {
+          return <NoDataPage data="User" />;
+        }
         return <LibraryPage />;
 
       case "History":
+        if (user.length === 0) {
+          return <NoDataPage data="User" />;
+        }
         return <HistoryPage />;
 
       case "Liked Videos":
+        if (user.length === 0) {
+          return <NoDataPage data="User" />;
+        }
         return <LikedVideos />;
 
       case "My Videos":
+        if (user.length === 0) {
+          return <NoDataPage data="User" />;
+        }
         return <MyVideos />;
 
       case "Settings":
@@ -54,12 +70,15 @@ const Dashboard = (props) => {
         return <Help />;
 
       case "About us":
-        return <Temp page="About us" />;
+        return <AboutUs />;
 
       case "Contact us":
         return <Contact />;
 
       case "Upload Video":
+        if (user.length === 0) {
+          return <NoDataPage data="User" />;
+        }
         return <UploadVideoForm />;
 
       case "Video Page":

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import GoogleLogin from "react-google-login";
+import MuiAlert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -12,12 +14,13 @@ import Container from "@material-ui/core/Container";
 import Loader from "../components/Loader";
 import logo from "../assets/icons/streamplay3.png";
 import dev from "../api/dev";
+import { Snackbar } from "@material-ui/core";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" href="">
         www.StreamPlay.com
       </Link>{" "}
       {new Date().getFullYear()}
@@ -50,6 +53,7 @@ export default function SignUp() {
   const classes = useStyles();
   const history = useHistory();
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(true);
   const [state, setState] = useState({
     firstName: "",
     lastName: "",
@@ -58,6 +62,9 @@ export default function SignUp() {
     subscribedBy: [],
     subscribedTo: [],
     likedVideos: { likes: [], dislikes: [] },
+    likedComments: { likes: [], dislikes: [] },
+    profilePic: null,
+    coverPic: null,
   });
   const [error, setError] = useState(false);
 
@@ -68,7 +75,20 @@ export default function SignUp() {
     return color;
   }
 
-  const handleSubmit = () => {
+  const Alert = (props) => {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const handleSubmit = (user) => {
+    console.log("handleSubmit called");
     setLoading(true);
     const {
       firstName,
@@ -78,18 +98,35 @@ export default function SignUp() {
       subscribedBy,
       subscribedTo,
       likedVideos,
+      likedComments,
+      profilePic,
+      coverPic,
     } = state;
     console.log("state: ", state);
-    if (firstName === "" || lastName === "" || email === "" || password === "")
+    if (
+      user.firstName === undefined &&
+      (firstName === "" || lastName === "" || email === "" || password === "")
+    )
       setError(true);
     else {
       const color = randomColor();
-      fetch(`${dev.BaseUrl}/users/signup`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
+      let body;
+      if (user.firstName !== undefined) {
+        body = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          password: user.password,
+          color: color,
+          subscribedTo: subscribedTo,
+          subscribedBy: subscribedBy,
+          likedVideos: likedVideos,
+          likedComments: likedComments,
+          profilePic: user.profilePic,
+          coverPic: coverPic,
+        };
+      } else {
+        body = {
           firstName,
           lastName,
           email,
@@ -98,25 +135,55 @@ export default function SignUp() {
           subscribedBy,
           subscribedTo,
           likedVideos,
-        }),
+          likedComments,
+          profilePic,
+          coverPic,
+        };
+      }
+      fetch(`${dev.BaseUrl}/users/signup`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ ...body }),
       })
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
           setLoading(false);
+          <Snackbar autoHideDuration={6000} onClose={handleClose}>
+            <Alert open={open} onClose={handleClose} severity="success">
+              Sign Up Successull. Sign In Please.
+            </Alert>
+          </Snackbar>;
           history.push("/signin");
         })
         .catch((err) => {
           console.log(err);
+          setLoading(false);
+          alert("Something wrong occured!!");
         });
     }
+  };
+
+  const responseGoogle = (response) => {
+    console.log("response from google:", response.profileObj);
+    let user = {
+      firstName: response.profileObj.familyName,
+      lastName: response.profileObj.givenName,
+      email: response.profileObj.email,
+      password: response.profileObj.googleId,
+      profilePic: response.profileObj.imageUrl,
+    };
+    console.log("state: ", state);
+    handleSubmit(user);
   };
 
   return (
     <>
       {loading ? (
         <div className="loader">
-          <Loader type="spinningBubbles" color="#d1d1d1" />
+          <Loader type="spin" color="#ffcc33" />
         </div>
       ) : null}
       <Container component="main" maxWidth="xs">
@@ -128,6 +195,15 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
+          <div className="google-btn">
+            <GoogleLogin
+              clientId="968054575994-cpmlqqijucnihgmhak7qt5cuv2aej4bh.apps.googleusercontent.com"
+              buttonText="SignUp"
+              onSuccess={responseGoogle}
+              onFailure={responseGoogle}
+              cookiePolicy={"single_host_origin"}
+            />
+          </div>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField

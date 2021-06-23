@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import GoogleLogin from "react-google-login";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -20,7 +21,7 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" href="">
         www.StreamPlay.com
       </Link>{" "}
       {new Date().getFullYear()}
@@ -56,19 +57,29 @@ export default function SignIn() {
   const history = useHistory();
   const classes = useStyles();
 
-  const handleLogin = async () => {
+  const handleLogin = async (user) => {
     setLoading(true);
     const { email, password } = state;
-    if (email !== "" || password !== "") {
+    if (email !== "" || password !== "" || user.email !== "") {
+      let body;
+      if (email === "") {
+        body = {
+          email: user.email,
+          password: user.password,
+        };
+      } else {
+        body = {
+          email: email,
+          password: password,
+        };
+      }
+      console.log("body: ", body);
       await fetch(`${dev.BaseUrl}/users/login`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: JSON.stringify({ ...body }),
       })
         .then((res) => res.json())
         .then((data) => {
@@ -95,6 +106,8 @@ export default function SignIn() {
             })
             .catch((err) => {
               console.log("Error in jwt code ", err);
+              setLoading(false);
+              alert("Wrong Email or Password!!!");
             });
         })
         .catch((err) => {
@@ -105,11 +118,20 @@ export default function SignIn() {
     }
   };
 
+  const responseGoogle = (response) => {
+    console.log("response from google:", response.profileObj);
+    var user = {
+      email: response.profileObj.email,
+      password: response.profileObj.googleId,
+    };
+    handleLogin(user);
+  };
+
   return (
     <>
       {loading ? (
         <div className="loader">
-          <Loader type="spinningBubbles" color="#d1d1d1" />
+          <Loader type="spin" color="#ffcc33" />
         </div>
       ) : null}
       <Container component="main" maxWidth="xs">
@@ -121,6 +143,16 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
+          <div className="google-btn">
+            <GoogleLogin
+              clientId="968054575994-cpmlqqijucnihgmhak7qt5cuv2aej4bh.apps.googleusercontent.com"
+              buttonText="Login"
+              onSuccess={responseGoogle}
+              onFailure={responseGoogle}
+              cookiePolicy={"single_host_origin"}
+              style={{ width: "100%" }}
+            />
+          </div>
           <TextField
             variant="outlined"
             margin="normal"

@@ -4,6 +4,7 @@ import { Tune } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 import dev from "../api/dev";
 import "./SearchItemsPage.css";
+import formatTimestamp from "../config/formatTimestamp";
 
 export function SearchCard({
   id,
@@ -24,12 +25,7 @@ export function SearchCard({
   return (
     <div className="search-card">
       <div className="thumbnail-container" onClick={changeVideo}>
-        <img
-          src={`${dev.BaseUrl}/${src}`}
-          width="100%"
-          height="100%"
-          alt="thumbnail"
-        />
+        <img src={`${src}`} width="100%" height="100%" alt="thumbnail" />
       </div>
       <div className="details-container">
         <div className="item-title-cont">
@@ -41,19 +37,34 @@ export function SearchCard({
             variant="subtitle2"
             className="subtitle-style"
           >
-            <span>{views}</span>&nbsp;views &bull; <span>{date}</span>
+            <span>{views}</span>&nbsp;views &bull;{" "}
+            <span>{formatTimestamp(date)}</span>
           </Typography>
         </div>
         <div className="writer-intro">
-          <Avatar
-            style={{
-              width: 20,
-              height: 20,
-              backgroundColor: writer.color,
-            }}
-          >
-            {writer.firstName[0]}
-          </Avatar>
+          {writer.profilePic === null ? (
+            <Avatar
+              style={{
+                width: 40,
+                height: 40,
+                marginRight: 10,
+                marginLeft: -8,
+                backgroundColor: writer.color,
+              }}
+            >
+              {writer.firstName[0]}
+            </Avatar>
+          ) : (
+            <Avatar
+              src={`${writer.profilePic}`}
+              style={{
+                width: 40,
+                height: 40,
+                marginRight: 10,
+                marginLeft: -8,
+              }}
+            />
+          )}
           <Typography
             component="h2"
             variant="subtitle2"

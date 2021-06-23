@@ -140,14 +140,14 @@ const NavHeader = ({ onMobileNavOpen }) => {
                   style={{
                     width: 30,
                     height: 30,
-                    backgroundColor: user[0] && user[0].color,
+                    backgroundColor: user[0].color,
                   }}
                 >
-                  {user[0] && user[0].firstName[0]}
+                  {user[0].firstName[0]}
                 </Avatar>
               ) : (
                 <Avatar
-                  src={`${dev.BaseUrl}/${user[0].profilePic}`}
+                  src={`${user[0].profilePic}`}
                   style={{
                     width: 30,
                     height: 30,

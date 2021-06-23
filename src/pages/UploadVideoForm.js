@@ -30,8 +30,8 @@ const Privacy = [
 ];
 
 const Category = [
-  { value: 0, label: "Education & Arts" },
-  { value: 0, label: "Movies & Series" },
+  { value: 0, label: "Education" },
+  { value: 0, label: "Movies" },
   { value: 0, label: "Music" },
   { value: 0, label: "Sports" },
   { value: 0, label: "Kids" },
@@ -76,6 +76,7 @@ function UploadVideoForm() {
             let variable = {
               filePath: res.data.filePath,
               fileName: res.data.fileName,
+              filePathInDisk: res.data.filePathInDisk,
             };
             setState((prevState) => ({
               ...prevState,
@@ -101,6 +102,7 @@ function UploadVideoForm() {
                 console.log("error: ", e);
               });
           } else {
+            console.log("error in uploading video: ", res.data);
             alert("failed to save video on server.");
           }
         });
@@ -140,8 +142,8 @@ function UploadVideoForm() {
           category,
           duration,
           thumbnail,
-          createdAt: new Date().toString().substr(4, 11),
-          updatedAt: new Date(),
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
         }),
       })
         .then((res) => res.json())
@@ -155,7 +157,7 @@ function UploadVideoForm() {
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.log("Error:", err);
         });
     }
   };
@@ -183,13 +185,13 @@ function UploadVideoForm() {
             )}
           </Dropzone>
           {loading ? (
-            <Loader type="spinningBubbles" color="lightgray" />
+            <Loader type="spin" color="#ffcc33" />
           ) : (
             state.thumbnail && (
               <div>
                 <img
                   className="thumb-prop"
-                  src={`${dev.BaseUrl}/${state.thumbnail}`}
+                  src={`${state.thumbnail}`}
                   alt="thumbnail"
                 />
               </div>

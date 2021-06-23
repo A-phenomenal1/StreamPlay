@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { PlaylistAdd, Share, ThumbDown, ThumbUp } from "@material-ui/icons";
 import { useStateValue } from "../config/StateProvider";
+import formatTimestamp from "../config/formatTimestamp";
 import CommentSection from "../components/CommentSection";
 import VideoPlayer from "react-video-js-player";
 import SideVideoPage from "./SideVideoPage";
@@ -22,6 +23,7 @@ function VideoPage() {
   const [subscriberno, setSubscriberno] = useState();
   const [isSubscribed, setIsSubscribed] = useState("Subscribe");
   const [load, setLoad] = useState(false);
+  const [showFull, setShowFull] = useState(false);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState({ like: false, dislike: false });
   const [isViewAdded, setIsViewAdded] = useState(false);
@@ -121,45 +123,44 @@ function VideoPage() {
             })
               .then((res) => res.json())
               .then((data) => {
-                try {
-                  if (data.success) {
-                    setIsViewAdded(true);
+                if (data.success) {
+                  setIsViewAdded(true);
 
-                    let prevHistory = JSON.parse(
-                      localStorage.getItem("recent-play")
+                  let prevHistory = JSON.parse(
+                    localStorage.getItem("recent-play")
+                  );
+
+                  if (prevHistory === null)
+                    localStorage.setItem("recent-play", JSON.stringify([]));
+
+                  if (!isPresentByAttr(prevHistory, "vid", id)) {
+                    // console.log("not includes ", id);
+                    localStorage.setItem(
+                      "recent-play",
+                      JSON.stringify([
+                        ...new Set([
+                          { date: new Date(), vid: id },
+                          ...prevHistory,
+                        ]),
+                      ])
                     );
-
-                    if (prevHistory === null)
-                      localStorage.setItem("recent-play", JSON.stringify([]));
-
-                    if (!isPresentByAttr(prevHistory, "vid", id)) {
-                      // console.log("not includes ", id);
-                      localStorage.setItem(
-                        "recent-play",
-                        JSON.stringify([
-                          ...new Set([
-                            { date: new Date(), vid: id },
-                            ...prevHistory,
-                          ]),
-                        ])
-                      );
-                    } else {
-                      // console.log("includes ", id);
-                      let storage = [...prevHistory];
-                      removeByAttr(storage, "vid", id);
-                      storage.unshift({ date: new Date(), vid: id });
-                      localStorage.setItem(
-                        "recent-play",
-                        JSON.stringify([...new Set(storage)])
-                      );
-                    }
-                    console.log("veiws updated");
                   } else {
-                    alert("failed to update views");
+                    // console.log("includes ", id);
+                    let storage = [...prevHistory];
+                    removeByAttr(storage, "vid", id);
+                    storage.unshift({ date: new Date(), vid: id });
+                    localStorage.setItem(
+                      "recent-play",
+                      JSON.stringify([...new Set(storage)])
+                    );
                   }
-                } catch (err) {
-                  console.log(err);
+                  console.log("veiws updated");
+                } else {
+                  alert("failed to update views");
                 }
+              })
+              .catch((err) => {
+                console.log(err);
               });
         } else {
           alert(data.error);
@@ -171,24 +172,31 @@ function VideoPage() {
     if (user.length !== 0) {
       let ids = [
         {
+          isPresent: false,
           param: user[0]._id,
           updateKey: "subscribedTo",
           newValue: video.writer._id,
         },
         {
+          isPresent: false,
           param: video.writer._id,
           updateKey: "subscribedBy",
           newValue: user[0]._id,
         },
       ];
+      if (isSubscribed === "Subscribed") {
+        ids[0].isPresent = true;
+        ids[1].isPresent = true;
+      }
       for (let i = 0; i < 2; i++) {
-        const { param, updateKey, newValue } = ids[i];
+        const { isPresent, param, updateKey, newValue } = ids[i];
         await fetch(`${dev.BaseUrl}/users/updatesubscriber?id=${param}`, {
           method: "PATCH",
           headers: {
             "content-type": "application/json",
           },
           body: JSON.stringify({
+            isPresent: isPresent,
             updateKey: updateKey,
             newValue: newValue,
           }),
@@ -199,8 +207,13 @@ function VideoPage() {
             try {
               if (data.success) {
                 if (updateKey === "subscribedBy") {
-                  alert(`You Subscribed ${video.writer.firstName}`);
-                  setIsSubscribed("Subscribed");
+                  if (isSubscribed === "Subscribed") {
+                    alert(`You Unsubscribed ${video.writer.firstName}`);
+                    setIsSubscribed("Subscribe");
+                  } else {
+                    alert(`You Subscribed ${video.writer.firstName}`);
+                    setIsSubscribed("Subscribed");
+                  }
                   setLoad(!load);
                 } else {
                   dispatch({
@@ -248,29 +261,27 @@ function VideoPage() {
           .then((res) => res.json())
           .then((data) => {
             console.log({ data });
-            try {
-              if (data.success) {
-                setEvents({
-                  like:
-                    event === "like" || events.like
-                      ? !events.like
-                      : events.like,
-                  dislike:
-                    event === "dislike" || events.dislike
-                      ? !events.dislike
-                      : events.dislike,
-                });
-                dispatch({
-                  type: "SET_USER",
-                  user: [data.result],
-                });
-                setLoad(!load);
-              } else {
-                alert("failed to change like and dislike");
-              }
-            } catch (err) {
-              console.log(err);
+
+            if (data.success) {
+              setEvents({
+                like:
+                  event === "like" || events.like ? !events.like : events.like,
+                dislike:
+                  event === "dislike" || events.dislike
+                    ? !events.dislike
+                    : events.dislike,
+              });
+              dispatch({
+                type: "SET_USER",
+                user: [data.result],
+              });
+              setLoad(!load);
+            } else {
+              alert("failed to change like and dislike");
             }
+          })
+          .catch((err) => {
+            console.log(err);
           })
       : alert("Login First to like this video....");
   };
@@ -292,8 +303,8 @@ function VideoPage() {
                 preload
                 autoplay={true}
                 controls={true}
-                src={`${dev.BaseUrl}/${video.filePath}`}
-                poster={`${dev.BaseUrl}/${video.thumbnail}`}
+                src={`${video.filePath}`}
+                poster={`${video.thumbnail}`}
                 className="video-player"
               />
             )}
@@ -313,7 +324,8 @@ function VideoPage() {
                   component="h2"
                   color="textSecondary"
                 >
-                  {video && video.views} views &bull; {video && video.createdAt}
+                  {video && video.views} views &bull;{" "}
+                  {video && formatTimestamp(video.createdAt)}
                 </Typography>
                 <Box style={{ flexGrow: 0.9 }} />
                 <div
@@ -368,7 +380,7 @@ function VideoPage() {
                     </Avatar>
                   ) : (
                     <Avatar
-                      src={video && `${dev.BaseUrl}/${video.writer.profilePic}`}
+                      src={video && `${video.writer.profilePic}`}
                       className="avt-sz"
                     />
                   )}
@@ -403,10 +415,17 @@ function VideoPage() {
               color="textSecondary"
               component="p"
               style={{ padding: "0 20px 0 70px " }}
-              className="tooltip line-after3"
+              className={showFull ? "" : "tooltip line-after3"}
             >
               {video && video.description}
             </Typography>
+            <div
+              className="read-more-icon"
+              style={{ marginLeft: "70px" }}
+              onClick={() => setShowFull(!showFull)}
+            >
+              Read <span>{showFull ? "Less" : "More"}</span>
+            </div>
             <div className="underline" />
             <Typography
               component="h2"

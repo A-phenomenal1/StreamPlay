@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Avatar, Container, Typography } from "@material-ui/core";
 import { useStateValue } from "../config/StateProvider";
 import SubscriptionsVideos from "../components/SubscribtionsVideos";
-import dev from "../api/dev";
-import Loader from "../components/Loader";
-import "./Home.css";
 import NoDataPage from "../components/NoDataPage";
+import Loader from "../components/Loader";
+import dev from "../api/dev";
+import "./Home.css";
 
 function Subscription() {
   const [subscribed, setSubscribed] = useState([]);
@@ -53,16 +53,26 @@ function Subscription() {
               {subscribed.map((subscribe) => {
                 return (
                   <div className="avt-cont">
-                    <Avatar
-                      style={{
-                        width: 60,
-                        height: 60,
-                        backgroundColor: subscribe.color,
-                        fontSize: "1.5em",
-                      }}
-                    >
-                      {subscribe.firstName[0]}
-                    </Avatar>
+                    {subscribe.profilePic === null ? (
+                      <Avatar
+                        style={{
+                          width: 60,
+                          height: 60,
+                          backgroundColor: subscribe.color,
+                          fontSize: "1.5em",
+                        }}
+                      >
+                        {subscribe.firstName[0]}
+                      </Avatar>
+                    ) : (
+                      <Avatar
+                        src={`${subscribe.profilePic}`}
+                        style={{
+                          width: 60,
+                          height: 60,
+                        }}
+                      />
+                    )}
                     <Typography
                       component="h2"
                       variant="subtitle2"

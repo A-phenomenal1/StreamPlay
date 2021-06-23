@@ -9,6 +9,7 @@ import { WhatshotRounded } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 import { Avatar, Grid } from "@material-ui/core";
 import dev from "../api/dev";
+import formatTimestamp from "../config/formatTimestamp";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     boxOrient: "vertical",
     lineClamp: 2,
     overflow: "hidden",
-    lineHeight: 1,
+    lineHeight: 1.1,
   },
   trend: {
     display: "flex",
@@ -92,7 +93,7 @@ export default function MediaCard({
           <CardMedia
             className={classes.media}
             style={{ height: height }}
-            image={`${dev.BaseUrl}/${img}`}
+            image={`${img}`}
             title={title}
             onClick={() => history.push(`/video/${_id}`)}
           />
@@ -113,7 +114,7 @@ export default function MediaCard({
                 </Avatar>
               ) : (
                 <Avatar
-                  src={`${dev.BaseUrl}/${writer.profilePic}`}
+                  src={`${writer.profilePic}`}
                   style={{
                     width: 40,
                     height: 40,
@@ -136,7 +137,7 @@ export default function MediaCard({
                 {writer.firstName} {writer.lastName}
               </Typography>
               <Typography variant="body2" color="textSecondary" component="p">
-                {views} views &bull; {date}
+                {views} views &bull; {formatTimestamp(date)}
               </Typography>
             </div>
           </CardContent>

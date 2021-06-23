@@ -1,3 +1,11 @@
+.top-cont {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+  padding: 2px 0;
+}
+
 .user-cont {
   display: flex;
   align-items: center;
@@ -8,7 +16,7 @@
 
 .block {
   display: flex;
-  color: #d1d1d1;
+  color: #fff;
   justify-content: space-between;
   width: 80%;
   font-size: 17px;
