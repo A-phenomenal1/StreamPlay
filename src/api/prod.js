@@ -1,5 +1,5 @@
 const prod = {
-  BaseUrl: "",
+  BaseUrl: "https://streamplay-webapp.herokuapp.com/api",
 };
 
 export default prod;
