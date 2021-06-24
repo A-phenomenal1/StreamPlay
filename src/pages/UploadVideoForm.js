@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Container,
@@ -7,6 +7,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 import Dropzone from "react-dropzone";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
@@ -122,7 +123,7 @@ function UploadVideoForm() {
       duration,
       thumbnail,
     } = state;
-    if (title === "" || description === "") setError(true);
+    if (title === "" || description === "" || filePath === "") setError(true);
     else if (user.length === 0) alert("Please Login First!!!");
     else {
       await fetch(`${dev.BaseUrl}/video/uploadvideo`, {
@@ -162,138 +163,167 @@ function UploadVideoForm() {
     }
   };
 
+  useEffect(() => {
+    if (window.innerWidth <= 480) {
+      let inputselector = document.querySelector("#upload-video").children[0];
+      inputselector.setAttribute("disabled", "");
+    }
+  }, []);
+
   return (
-    <Container component="main" maxWidth="md">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Typography component="h1" variant="h4" className="title">
-          Upload video
-        </Typography>
-        <div
-          style={{
-            display: "flex",
-          }}
-        >
-          <Dropzone onDrop={onDrop} multiple={false} maxSize={800000000}>
-            {({ getRootProps, getInputProps }) => (
-              <section>
-                <div {...getRootProps()} className="dropzone">
-                  <input {...getInputProps()} />
-                  <Add style={{ width: 40, height: 40 }} />
+    <>
+      {window.innerWidth >= 480 ? (
+        <Alert severity="warning">
+          It is necessary to install{" "}
+          <b>
+            <i>ffmpeg</i>
+          </b>{" "}
+          to upload any video. Check out Read Me or About us in the application.
+        </Alert>
+      ) : (
+        <Alert severity="error">
+          The video upload feature does not work on smartphone.
+        </Alert>
+      )}
+      <Container component="main" maxWidth="md">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Typography component="h1" variant="h4" className="title">
+            Upload video
+          </Typography>
+          <div
+            style={{
+              display: "flex",
+            }}
+          >
+            <Dropzone onDrop={onDrop} multiple={false} maxSize={800000000}>
+              {({ getRootProps, getInputProps }) => (
+                <section>
+                  <div
+                    {...getRootProps()}
+                    className="dropzone"
+                    id="upload-video"
+                  >
+                    <input {...getInputProps()} />
+                    <Add style={{ width: 40, height: 40 }} />
+                  </div>
+                  {state.filePath === "" && error ? (
+                    <div style={{ color: "red" }}>*Required Field</div>
+                  ) : null}
+                </section>
+              )}
+            </Dropzone>
+            {loading ? (
+              <Loader type="spin" color="#ffcc33" />
+            ) : (
+              state.thumbnail && (
+                <div>
+                  <img
+                    className="thumb-prop"
+                    src={`${state.thumbnail}`}
+                    alt="thumbnail"
+                  />
                 </div>
-              </section>
+              )
             )}
-          </Dropzone>
-          {loading ? (
-            <Loader type="spin" color="#ffcc33" />
-          ) : (
-            state.thumbnail && (
-              <div>
-                <img
-                  className="thumb-prop"
-                  src={`${state.thumbnail}`}
-                  alt="thumbnail"
-                />
-              </div>
-            )
-          )}
+          </div>
+
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="title"
+            label="Title"
+            name="title"
+            autoComplete="title"
+            onChange={(e) =>
+              setState((prevState) => ({
+                ...prevState,
+                title: e.target.value,
+              }))
+            }
+            helperText={
+              state.title === "" && error ? (
+                <span style={{ color: "red" }}>*Required Field</span>
+              ) : null
+            }
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="description"
+            label="Description"
+            name="description"
+            autoComplete="description"
+            multiline
+            rows={4}
+            onChange={(e) =>
+              setState((prevState) => ({
+                ...prevState,
+                description: e.target.value,
+              }))
+            }
+            helperText={
+              state.description === "" && error ? (
+                <span style={{ color: "red" }}>*Required Field</span>
+              ) : null
+            }
+          />
+          <br />
+
+          <select
+            onChange={(e) =>
+              setState((prevState) => ({
+                ...prevState,
+                privacy: Privacy[e.target.value].label,
+              }))
+            }
+            style={{ width: "100px" }}
+            className="selector"
+          >
+            {Privacy.map((item, index) => (
+              <option key={index} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+          <br />
+
+          <select
+            onChange={(e) =>
+              setState((prevState) => ({
+                ...prevState,
+                category: e.target.value,
+              }))
+            }
+            style={{
+              width: "150px",
+            }}
+            className="selector"
+          >
+            {Category.map((item, index) => (
+              <option key={index} value={item.label}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+          <br />
+          <br />
         </div>
-
-        <TextField
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          id="title"
-          label="Title"
-          name="title"
-          autoComplete="title"
-          onChange={(e) =>
-            setState((prevState) => ({
-              ...prevState,
-              title: e.target.value,
-            }))
-          }
-          helperText={
-            state.title === "" && error ? (
-              <span style={{ color: "red" }}>*Required Field</span>
-            ) : null
-          }
-        />
-        <TextField
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          id="description"
-          label="Description"
-          name="description"
-          autoComplete="description"
-          multiline
-          rows={4}
-          onChange={(e) =>
-            setState((prevState) => ({
-              ...prevState,
-              description: e.target.value,
-            }))
-          }
-          helperText={
-            state.description === "" && error ? (
-              <span style={{ color: "red" }}>*Required Field</span>
-            ) : null
-          }
-        />
-        <br />
-
-        <select
-          onChange={(e) =>
-            setState((prevState) => ({
-              ...prevState,
-              privacy: Privacy[e.target.value].label,
-            }))
-          }
-          style={{ width: "100px" }}
-          className="selector"
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<CloudUpload />}
+          className="upload-btn"
+          onClick={onUpload}
         >
-          {Privacy.map((item, index) => (
-            <option key={index} value={item.value}>
-              {item.label}
-            </option>
-          ))}
-        </select>
-        <br />
-
-        <select
-          onChange={(e) =>
-            setState((prevState) => ({
-              ...prevState,
-              category: e.target.value,
-            }))
-          }
-          style={{
-            width: "150px",
-          }}
-          className="selector"
-        >
-          {Category.map((item, index) => (
-            <option key={index} value={item.label}>
-              {item.label}
-            </option>
-          ))}
-        </select>
+          Upload
+        </Button>
         <br />
         <br />
-      </div>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<CloudUpload />}
-        className="upload-btn"
-        onClick={onUpload}
-      >
-        Upload
-      </Button>
-      <br />
-      <br />
-    </Container>
+      </Container>
+    </>
   );
 }
 
