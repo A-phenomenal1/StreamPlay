@@ -104,12 +104,13 @@
   }
 
   .vids-container2 {
-    padding: 0 5%;
+    flex: 0 auto;
   }
 
   .filterbtn {
     min-width: 70px;
     font-size: 13px;
+    margin: 5px 10px;
   }
 
   .filterbtn:hover {

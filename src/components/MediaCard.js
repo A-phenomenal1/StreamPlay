@@ -79,7 +79,14 @@ export default function MediaCard({
 
   return (
     <ThemeProvider theme={theme}>
-      <Grid container item lg={4} md={6} sm={12}>
+      <Grid
+        container
+        item
+        lg={4}
+        md={6}
+        sm={12}
+        style={{ display: "flex", justifyContent: "center" }}
+      >
         <Card
           className={classes.root}
           style={{ minWidth: width || 320, maxWidth: width || 320 }}

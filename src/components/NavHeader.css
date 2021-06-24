@@ -114,9 +114,14 @@
     height: 120px;
   }
 
+  .logo_container {
+    width: 160px;
+  }
+
   .header_logo {
     width: 160px;
-    margin-top: 10px;
+    margin: 10px 0 0 0;
+    /* border: 1px solid red; */
   }
 
   .search-box {
@@ -137,7 +142,7 @@
   }
 
   .nav_icon_container {
-    width: 100%;
+    width: 90px;
     justify-content: space-between;
   }
 
