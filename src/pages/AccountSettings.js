@@ -206,7 +206,9 @@ const AccountSettings = () => {
   return (
     <>
       <Container maxWidth="lg" style={{ marginTop: 20, overflow: "hidden" }}>
-        {loading ? <Loader type="spinningBubbles" color="#C84B31" /> : null}
+        {loading ? (
+          <Loader type="bars" color="#ffcc33" hgt="calc(100% - 100px)" />
+        ) : null}
         <Grid container spacing={3}>
           <Grid item lg={12} xs={12}>
             <Dropzone

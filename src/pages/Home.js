@@ -120,8 +120,10 @@ function Home() {
             </div>
           </div>
           {loading ? (
-            <Loader />
-          ) : videos.results.length !== 0 ? (
+            <div className="if-no-data-in-library">
+              <Loader hgt="calc(100% - 520px)" />
+            </div>
+          ) : videos.results && videos.results.length !== 0 ? (
             <div className="vids-container2">
               {videos.results.map((video, index) => {
                 return (

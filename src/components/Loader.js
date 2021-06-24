@@ -8,7 +8,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     position: "fixed",
     width: "calc(100% - 400px)",
-    height: "calc(100% - 300px)",
     justifyContent: "center",
     alignItems: "center",
     zIndex: 99,
@@ -18,10 +17,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Loader({ type = "bars", color = "#555577" }) {
+function Loader({
+  type = "bars",
+  color = "#ffcc33",
+  hgt = "calc(100% - 300px)",
+}) {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{ height: hgt }}>
       <ReactLoading type={type} color={color} height={40} width={120} />
     </div>
   );

@@ -120,6 +120,11 @@ function Sidepanel({ onMobileClose, openMobile, shouldDisplay }) {
     },
   ];
 
+  const handleClick = (path) => {
+    onMobileClose();
+    history.push(path);
+  };
+
   const handleProfile = async () => {
     if (user[0] && user[0].length !== 0) {
       localStorage.removeItem("recent-play");
@@ -144,7 +149,7 @@ function Sidepanel({ onMobileClose, openMobile, shouldDisplay }) {
               <ListItem disableGutters className={classes.listItem}>
                 <Button
                   className={classes.listBtn}
-                  onClick={() => history.push(item.path)}
+                  onClick={() => handleClick(item.path)}
                 >
                   {item.icon && (
                     <item.icon style={{ marginRight: 10, width: 25 }} />
@@ -167,7 +172,7 @@ function Sidepanel({ onMobileClose, openMobile, shouldDisplay }) {
               <ListItem disableGutters className={classes.listItem}>
                 <Button
                   className={classes.listBtn}
-                  onClick={() => history.push(item.path)}
+                  onClick={() => handleClick(item.path)}
                 >
                   {item.icon && (
                     <item.icon style={{ marginRight: 10, width: 20 }} />
@@ -190,7 +195,7 @@ function Sidepanel({ onMobileClose, openMobile, shouldDisplay }) {
               <ListItem disableGutters className={classes.listItem}>
                 <Button
                   className={classes.listBtn}
-                  onClick={() => history.push(item.path)}
+                  onClick={() => handleClick(item.path)}
                 >
                   {item.icon && (
                     <item.icon style={{ marginRight: 10, width: 20 }} />

@@ -40,7 +40,7 @@ function HistoryPage({ should }) {
       arr = filterByAttr(history, 0);
     } else if (filter === "yesterday") {
       arr = filterByAttr(history, 1);
-    } else if (filter === "2 days before") {
+    } else if (filter === "2 days ago") {
       arr = filterByAttr(history, 2);
     } else {
       arr = history;
@@ -49,6 +49,7 @@ function HistoryPage({ should }) {
   }, [filter]);
 
   useEffect(() => {
+    setLoading(true);
     const promises = [];
 
     const timeOut = (id) => {
@@ -115,11 +116,11 @@ function HistoryPage({ should }) {
           </div>
           <div
             className={
-              filter === "2 days before" ? "filterbtn active" : "filterbtn"
+              filter === "2 days ago" ? "filterbtn active" : "filterbtn"
             }
-            onClick={() => setFilter("2 days before")}
+            onClick={() => setFilter("2 days ago")}
           >
-            2 Days Before
+            2 days ago
           </div>
           <div
             className={filter === "all" ? "filterbtn active" : "filterbtn"}

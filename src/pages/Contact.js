@@ -54,7 +54,7 @@ function Contact() {
 
   return (
     <>
-      {loading ? <Loader type="spinningBubbles" color="#ffffff" /> : null}
+      {loading ? <Loader type="spin" /> : null}
       <Container component="xd"></Container>
       <Container component="main">
         <div>
