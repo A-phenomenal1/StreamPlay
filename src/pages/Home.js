@@ -30,6 +30,7 @@ function Home() {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     console.log("filter: ", filter);
     if (filter === "all") {
       fetch(`${dev.BaseUrl}/video/getallvideo?page=1&limit=6`, {
