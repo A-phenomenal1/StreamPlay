@@ -276,7 +276,7 @@ function VideoPage() {
     } else
       setShowModal({
         isShow: true,
-        message: ["Whoops!", `Login First`],
+        message: ["Whoops!", `You should login first.`],
       });
   };
 

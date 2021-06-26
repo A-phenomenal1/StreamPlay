@@ -15,6 +15,8 @@ const useStyles = makeStyles((theme) => ({
     "& > * + *": {
       marginTop: theme.spacing(2),
     },
+    maxWidth: "90%",
+    minWidth: 250,
   },
 }));
 

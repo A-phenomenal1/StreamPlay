@@ -19,6 +19,7 @@ export function CommentTemplate(props) {
   const [showFull, setShowFull] = useState(false);
   const [openReply, setOpenReply] = useState(false);
   const [load, setLoad] = useState(false);
+  const [showModal, setShowModal] = useState({ isShow: false, message: [] });
   const [events, setEvents] = useState({
     like: false,
     dislike: false,
@@ -73,13 +74,19 @@ export function CommentTemplate(props) {
                 });
                 setLoad(!load);
               } else {
-                alert("failed to change like and dislike");
+                setShowModal({
+                  isShow: true,
+                  message: ["Whoops!", `Failed to change like and dislike.`],
+                });
               }
             } catch (err) {
               console.log(err);
             }
           })
-      : alert("Login First to like this video....");
+      : setShowModal({
+          isShow: true,
+          message: ["Whoops!", `You should login first.`],
+        });
   };
 
   useEffect(() => {
@@ -93,6 +100,12 @@ export function CommentTemplate(props) {
 
   return (
     <Container component="lg">
+      {showModal.isShow ? (
+        <AlertModal
+          hideModal={() => setShowModal((prev) => ({ ...prev, isShow: false }))}
+          message={showModal.message}
+        />
+      ) : null}
       <div
         style={{
           display: "flex",
@@ -242,7 +255,6 @@ export function CommentField(props) {
             });
             props.refreshCallback(data.result);
             if (commentId !== null) {
-              console.log("commentField hide");
               props.callback();
             }
           } else {

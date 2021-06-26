@@ -15,7 +15,8 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     border: "2px solid #000",
     padding: theme.spacing(2, 4, 3),
-    Width: "90%",
+    maxWidth: "90%",
+    minWidth: 250,
     color: "#ffffff",
   },
 }));
