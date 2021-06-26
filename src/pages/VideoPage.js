@@ -8,23 +8,49 @@ import {
   Grid,
   Typography,
 } from "@material-ui/core";
-import { PlaylistAdd, Share, ThumbDown, ThumbUp } from "@material-ui/icons";
+import {
+  Email,
+  Facebook,
+  PlaylistAdd,
+  Share,
+  Telegram,
+  ThumbDown,
+  ThumbUp,
+  Twitter,
+  WhatsApp,
+} from "@material-ui/icons";
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  EmailShareButton,
+  WhatsappShareButton,
+  TelegramShareButton,
+} from "react-share";
 import { useStateValue } from "../config/StateProvider";
 import formatTimestamp from "../config/formatTimestamp";
 import CommentSection from "../components/CommentSection";
 import VideoPlayer from "react-video-js-player";
 import SideVideoPage from "./SideVideoPage";
+import AlertModal from "../components/AlertModal";
 import dev from "../api/dev";
 import "./VideoPage.css";
+import AlertBar from "../components/AlertBar";
 
 function VideoPage() {
   const [video, setVideo] = useState();
   const [commentList, setCommentList] = useState([]);
   const [subscriberno, setSubscriberno] = useState();
   const [isSubscribed, setIsSubscribed] = useState("Subscribe");
+  const [isShare, setIsShare] = useState(false);
   const [load, setLoad] = useState(false);
   const [showFull, setShowFull] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState({ isShow: false, message: [] });
+  const [showBar, setShowBar] = useState({
+    isShow: false,
+    message: [],
+    severity: "success",
+  });
   const [events, setEvents] = useState({ like: false, dislike: false });
   const [isViewAdded, setIsViewAdded] = useState(false);
   const [{ user }, dispatch] = useStateValue();
@@ -156,14 +182,17 @@ function VideoPage() {
                   }
                   console.log("veiws updated");
                 } else {
-                  alert("failed to update views");
+                  console.log("failed to update views");
                 }
               })
               .catch((err) => {
                 console.log(err);
               });
         } else {
-          alert(data.error);
+          setShowModal({
+            isShow: true,
+            message: ["Whoops!", `${data.error}`],
+          });
         }
       });
   }, [user[0], load]);
@@ -208,10 +237,22 @@ function VideoPage() {
               if (data.success) {
                 if (updateKey === "subscribedBy") {
                   if (isSubscribed === "Subscribed") {
-                    alert(`You Unsubscribed ${video.writer.firstName}`);
+                    setShowModal({
+                      isShow: true,
+                      message: [
+                        "I'm sorry to hear",
+                        `You have unsubscribed ${video.writer.firstName} ${video.writer.lastName}`,
+                      ],
+                    });
                     setIsSubscribed("Subscribe");
                   } else {
-                    alert(`You Subscribed ${video.writer.firstName}`);
+                    setShowModal({
+                      isShow: true,
+                      message: [
+                        "Bravo!",
+                        `You Subscribed ${video.writer.firstName} ${video.writer.lastName}`,
+                      ],
+                    });
                     setIsSubscribed("Subscribed");
                   }
                   setLoad(!load);
@@ -222,14 +263,21 @@ function VideoPage() {
                   });
                 }
               } else {
-                alert("failed to subscribe");
+                setShowModal({
+                  isShow: true,
+                  message: ["Whoops!", `Failed to update subscribe`],
+                });
               }
             } catch (err) {
               console.log(err);
             }
           });
       }
-    } else alert("Login First...");
+    } else
+      setShowModal({
+        isShow: true,
+        message: ["Whoops!", `Login First`],
+      });
   };
 
   const onThumbEvent = async (event) => {
@@ -260,8 +308,6 @@ function VideoPage() {
         )
           .then((res) => res.json())
           .then((data) => {
-            console.log({ data });
-
             if (data.success) {
               setEvents({
                 like:
@@ -271,27 +317,122 @@ function VideoPage() {
                     ? !events.dislike
                     : events.dislike,
               });
+              if (event === "like")
+                setShowBar({
+                  isShow: true,
+                  message: !events.like
+                    ? [`Added to Liked videos`]
+                    : [`Removed from Liked videos`],
+                  severity: "success",
+                });
               dispatch({
                 type: "SET_USER",
                 user: [data.result],
               });
               setLoad(!load);
             } else {
-              alert("failed to change like and dislike");
+              setShowBar({
+                isShow: true,
+                message: [`Failed to update like and dislike`],
+                severity: "error",
+              });
             }
           })
           .catch((err) => {
             console.log(err);
           })
-      : alert("Login First to like this video....");
+      : setShowModal({
+          isShow: true,
+          message: ["Whoops!", `You should Login first...`],
+        });
   };
 
   const updateComment = (newComment) => {
+    console.log("main comments array updated. with ", newComment);
     setCommentList((prevComment) => [...prevComment, newComment]);
+  };
+
+  const shareModal = () => {
+    return (
+      <>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+          }}
+        >
+          <FacebookShareButton
+            url={`${window.location.href}`}
+            quote="Check out this video on StreamPlay website. Link:  "
+          >
+            <Button style={{ width: 35 }}>
+              <Facebook style={{ color: "#0052ff", fontSize: "35px" }} />
+            </Button>
+          </FacebookShareButton>
+
+          <WhatsappShareButton
+            url={`${window.location.href}`}
+            title="Check out this video on StreamPlay website. Link: \n "
+          >
+            <Button style={{ width: 35 }}>
+              <WhatsApp style={{ color: "#00ff5e", fontSize: "35px" }} />
+            </Button>
+          </WhatsappShareButton>
+
+          <TelegramShareButton
+            url={`${window.location.href}`}
+            title="Check out this video on StreamPlay website. Link: \n "
+          >
+            <Button style={{ width: 35 }}>
+              <Telegram style={{ color: "#00b1ff", fontSize: "35px" }} />
+            </Button>
+          </TelegramShareButton>
+
+          <TwitterShareButton
+            url={`${window.location.href}`}
+            title="Check out this video on StreamPlay website. Link: \n "
+          >
+            <Button style={{ width: 35 }}>
+              <Twitter style={{ color: "#00b6ff", fontSize: "35px" }} />
+            </Button>
+          </TwitterShareButton>
+
+          <EmailShareButton
+            subject={`Check out This video`}
+            body={`Check out this of StreamPlay website. Link:  
+         ${window.location.pathname}  `}
+          >
+            <Button style={{ width: 35 }}>
+              <Email style={{ color: "#f53c3c", fontSize: "35px" }} />
+            </Button>
+          </EmailShareButton>
+        </div>
+      </>
+    );
   };
 
   return (
     <Container component="main">
+      {showModal.isShow ? (
+        <AlertModal
+          hideModal={() => setShowModal((prev) => ({ ...prev, isShow: false }))}
+          message={showModal.message}
+        />
+      ) : null}
+      {showBar.isShow ? (
+        <AlertBar
+          hideBar={() => setShowBar((prev) => ({ ...prev, isShow: false }))}
+          message={showBar.message}
+          type={showBar.severity}
+        />
+      ) : null}
+      {isShare ? (
+        <AlertModal
+          hideModal={() => setIsShare(false)}
+          message={["Share this video on:"]}
+          children={shareModal()}
+        />
+      ) : null}
       <CssBaseline />
       <div className="page-cont">
         <Grid item lg={8} md={12}>
@@ -318,7 +459,7 @@ function VideoPage() {
               >
                 {video && video.title}
               </Typography>
-              <div style={{ display: "flex" }}>
+              <div className="video-title2">
                 <Typography
                   variant="body1"
                   component="h2"
@@ -328,12 +469,7 @@ function VideoPage() {
                   {video && formatTimestamp(video.createdAt)}
                 </Typography>
                 <Box style={{ flexGrow: 0.9 }} />
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
+                <div className="video-icons-cont">
                   <span
                     style={{ display: "flex", margin: "0 10px" }}
                     onClick={() => onThumbEvent("like")}
@@ -354,7 +490,7 @@ function VideoPage() {
                     />
                     &nbsp;<span>{video && video.dislikes}</span>
                   </span>
-                  <span className="share">
+                  <span className="share" onClick={() => setIsShare(true)}>
                     <Share />
                     &nbsp;<span>Share</span>
                   </span>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import GoogleLogin from "react-google-login";
-import MuiAlert from "@material-ui/lab/Alert";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -14,7 +13,7 @@ import Container from "@material-ui/core/Container";
 import Loader from "../components/Loader";
 import logo from "../assets/icons/streamplay3.png";
 import dev from "../api/dev";
-import { Snackbar } from "@material-ui/core";
+import AlertBar from "../components/AlertBar";
 
 function Copyright() {
   return (
@@ -46,6 +45,10 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    backgroundColor: "#0c5670",
+    "&:hover": {
+      backgroundColor: "#073c4f !important",
+    },
   },
 }));
 
@@ -53,7 +56,11 @@ export default function SignUp() {
   const classes = useStyles();
   const history = useHistory();
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(true);
+  const [showBar, setShowBar] = useState({
+    isShow: false,
+    message: [],
+    severity: "success",
+  });
   const [state, setState] = useState({
     firstName: "",
     lastName: "",
@@ -68,28 +75,19 @@ export default function SignUp() {
   });
   const [error, setError] = useState(false);
 
-  function randomColor() {
+  const randomColor = () => {
     let hex = Math.floor(Math.random() * 0xffffff);
     let color = "#" + hex.toString(16);
 
     return color;
-  }
-
-  const Alert = (props) => {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
   };
 
   const handleSubmit = (user) => {
-    console.log("handleSubmit called");
-    setLoading(true);
     const {
       firstName,
       lastName,
@@ -108,7 +106,10 @@ export default function SignUp() {
       (firstName === "" || lastName === "" || email === "" || password === "")
     )
       setError(true);
-    else {
+    if (!validateEmail(email)) {
+      setError(true);
+    } else {
+      setLoading(true);
       const color = randomColor();
       let body;
       if (user.firstName !== undefined) {
@@ -151,17 +152,21 @@ export default function SignUp() {
         .then((data) => {
           console.log(data);
           setLoading(false);
-          <Snackbar autoHideDuration={6000} onClose={handleClose}>
-            <Alert open={open} onClose={handleClose} severity="success">
-              Sign Up Successull. Sign In Please.
-            </Alert>
-          </Snackbar>;
+          setShowBar({
+            isShow: true,
+            message: ["Signup successful, Signin please"],
+            severity: "success",
+          });
           history.push("/signin");
         })
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          alert("Something wrong occured!!");
+          setShowBar({
+            isShow: true,
+            message: ["Something wrong occured!!"],
+            severity: "error",
+          });
         });
     }
   };
@@ -187,6 +192,13 @@ export default function SignUp() {
         </div>
       ) : null}
       <Container component="main" maxWidth="xs">
+        {showBar.isShow ? (
+          <AlertBar
+            hideBar={() => setShowBar((prev) => ({ ...prev, isShow: false }))}
+            message={showBar.message}
+            type={showBar.severity}
+          />
+        ) : null}
         <CssBaseline />
         <div className={classes.paper}>
           <div className="logo_container_signPage">
@@ -223,7 +235,7 @@ export default function SignUp() {
                 }
                 helperText={
                   state.firstName === "" && error ? (
-                    <span style={{ color: "red" }}>*Required Field</span>
+                    <span style={{ color: "#ea4335" }}>*Required Field</span>
                   ) : null
                 }
               />
@@ -245,7 +257,7 @@ export default function SignUp() {
                 }
                 helperText={
                   state.lastName === "" && error ? (
-                    <span style={{ color: "red" }}>*Required Field</span>
+                    <span style={{ color: "#ea4335" }}>*Required Field</span>
                   ) : null
                 }
               />
@@ -267,7 +279,9 @@ export default function SignUp() {
                 }
                 helperText={
                   state.email === "" && error ? (
-                    <span style={{ color: "red" }}>*Required Field</span>
+                    <span style={{ color: "#ea4335" }}>*Required Field</span>
+                  ) : error && state.email !== "" ? (
+                    <span style={{ color: "#ea4335" }}>*Not a valid Email</span>
                   ) : null
                 }
               />
@@ -290,7 +304,7 @@ export default function SignUp() {
                 }
                 helperText={
                   state.password === "" && error ? (
-                    <span style={{ color: "red" }}>*Required Field</span>
+                    <span style={{ color: "#ea4335" }}>*Required Field</span>
                   ) : null
                 }
               />
@@ -299,8 +313,8 @@ export default function SignUp() {
           <Button
             type="submit"
             fullWidth
-            variant="contained"
             color="primary"
+            variant="contained"
             className={classes.submit}
             onClick={handleSubmit}
           >
@@ -308,7 +322,7 @@ export default function SignUp() {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="/signin" variant="body2">
+              <Link href="/signin" variant="body2" style={{ color: "#db6939" }}>
                 Already have an account? Sign in
               </Link>
             </Grid>

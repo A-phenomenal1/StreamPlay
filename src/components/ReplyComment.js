@@ -13,11 +13,10 @@ function ReplyComment(props) {
     props.commentList.map((comment) => {
       if (comment.replyToId === props.parentCommentId) {
         commentNumber++;
-        // window.location.reload(false);
       }
     });
     setChildCount(commentNumber);
-  }, []);
+  }, [props]);
 
   useEffect(() => {
     setLoad(!load);

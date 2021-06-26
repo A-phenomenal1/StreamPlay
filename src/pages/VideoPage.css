@@ -51,6 +51,15 @@
   line-height: 1;
 }
 
+.video-title2 {
+  display: flex;
+}
+
+.video-icons-cont {
+  display: flex;
+  justify-content: space-between;
+}
+
 .share,
 .save {
   display: flex;
@@ -108,7 +117,18 @@
     padding-left: 12px;
   }
 
-  .share,
+  .video-title2 {
+    flex-direction: column;
+  }
+
+  .video-icons-cont {
+    justify-content: space-evenly;
+  }
+
+  .share > span {
+    display: none;
+  }
+
   .save {
     display: none;
   }

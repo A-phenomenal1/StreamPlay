@@ -5,6 +5,7 @@ import logo from "../assets/icons/streamplay3.png";
 import "./Contact.css";
 import dev from "../api/dev";
 import Loader from "../components/Loader";
+import AlertModal from "../components/AlertModal";
 
 function Contact() {
   const [state, setState] = useState({
@@ -15,6 +16,7 @@ function Contact() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [showModal, setShowModal] = useState({ isShow: false, message: [] });
 
   const handleSend = () => {
     const { name, email, subject, message } = state;
@@ -38,12 +40,19 @@ function Contact() {
         .then((data) => {
           setLoading(false);
           if (data.success) {
-            alert("Mail Sent..., We will come back soon.");
+            setShowModal({
+              isShow: true,
+              message: ["Mail sent.", `We will come back soon.`],
+            });
             window.location.reload(false);
           } else {
-            alert(
-              "You should enter email and pasword in sendMail.js in helper folder on server"
-            );
+            setShowModal({
+              isShow: true,
+              message: [
+                "Empty email & password",
+                `You should enter email and pasword in sendMail.js in helper folder on server`,
+              ],
+            });
           }
         })
         .catch((err) => {
@@ -55,8 +64,15 @@ function Contact() {
   return (
     <>
       {loading ? <Loader type="spin" /> : null}
-      <Container component="xd"></Container>
       <Container component="main">
+        {showModal.isShow ? (
+          <AlertModal
+            hideModal={() =>
+              setShowModal((prev) => ({ ...prev, isShow: false }))
+            }
+            message={showModal.message}
+          />
+        ) : null}
         <div>
           <Typography component="h2" variant="h5" className="home-title">
             Contact us

@@ -1,8 +1,9 @@
-import { Container, Typography } from "@material-ui/core";
 import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { Container, Typography } from "@material-ui/core";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
-import logo from "../assets/icons/streamplay1.png";
 import QueryTable from "../components/QueryTable";
+import logo from "../assets/icons/streamplay1.png";
 import "./Help.css";
 
 function Help() {
@@ -113,13 +114,17 @@ function Help() {
       ],
     },
   ];
-
+  const history = useHistory();
   const item2 = items.map((item) => item.data).flat(1);
 
   const handleEnterTapped = (e) => {
     if (e.keyCode === 13) {
       console.log("enterTabbed");
     }
+  };
+
+  const handleOnSelect = () => {
+    history.push("/nodata");
   };
 
   useEffect(() => {
@@ -958,6 +963,7 @@ function Help() {
             items={item2}
             placeholder="Describe your issue"
             autoFocus
+            onSelect={handleOnSelect}
             styling={{
               backgroundColor: "rgba(255,255,255,0.7)",
               iconColor: "#000",

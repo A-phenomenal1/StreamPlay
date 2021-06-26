@@ -5,10 +5,12 @@ import Trending from "../components/Trending";
 import Loader from "../components/Loader";
 import dev from "../api/dev";
 import "./Home.css";
+import AlertModal from "../components/AlertModal";
 
 function Home() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState({ isShow: false, message: [] });
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
@@ -24,7 +26,13 @@ function Home() {
         } else {
           console.log(data.error);
           setLoading(false);
-          alert("Something wrong occured!!!");
+          setShowModal({
+            isShow: true,
+            message: [
+              "Whoops!",
+              `Something went wrong. Check your internet connection`,
+            ],
+          });
         }
       });
   }, []);
@@ -45,7 +53,13 @@ function Home() {
           } else {
             console.log(data.error);
             setLoading(false);
-            alert("Something wrong occured!!!");
+            setShowModal({
+              isShow: true,
+              message: [
+                "Whoops!",
+                `Something went wrong. Check your internet connection`,
+              ],
+            });
           }
         });
     } else {
@@ -64,7 +78,13 @@ function Home() {
           } else {
             console.log(data.error);
             setLoading(false);
-            alert("Something wrong occured!!!");
+            setShowModal({
+              isShow: true,
+              message: [
+                "Whoops!",
+                `Something went wrong. Check your internet connection`,
+              ],
+            });
           }
         });
     }
@@ -73,6 +93,14 @@ function Home() {
   return (
     <>
       <Container component="main">
+        {showModal.isShow ? (
+          <AlertModal
+            hideModal={() =>
+              setShowModal((prev) => ({ ...prev, isShow: false }))
+            }
+            message={showModal.message}
+          />
+        ) : null}
         <div>
           <Typography component="h2" variant="h5" className="home-title">
             Recommended

@@ -133,7 +133,11 @@ const NavHeader = ({ onMobileNavOpen }) => {
             <Notifications style={{ width: 30, height: 30 }} />
             <span className="icon-name">Notifications</span>
           </div>
-          <div className="nav_profile_icons" id="account">
+          <div
+            className="nav_profile_icons"
+            id="account"
+            onClick={() => history.push("/settings")}
+          >
             {user.length !== 0 ? (
               user[0].profilePic === null ? (
                 <Avatar

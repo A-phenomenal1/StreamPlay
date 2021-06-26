@@ -14,7 +14,7 @@ function SideVideoPage() {
         console.log({ data });
         if (data.success) setVideos(data.videos);
         else {
-          alert(data.error);
+          console.log("in sidevideo page get:", data.error);
         }
       });
   }, []);

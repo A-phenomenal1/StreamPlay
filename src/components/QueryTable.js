@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import {
   Accordion,
   AccordionDetails,
@@ -27,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 function QueryTable({ items }) {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
+  const history = useHistory();
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -50,7 +52,10 @@ function QueryTable({ items }) {
               <Typography className={classes.heading}>{item.name}</Typography>
             </AccordionSummary>
             {item.data.map((subitem) => (
-              <AccordionDetails className="accord-subitem">
+              <AccordionDetails
+                className="accord-subitem"
+                onClick={() => history.push("/nodata")}
+              >
                 <Typography component="h2" variant="body2">
                   {subitem.name}
                 </Typography>

@@ -129,12 +129,13 @@ function Sidepanel({ onMobileClose, openMobile, shouldDisplay }) {
     if (user[0] && user[0].length !== 0) {
       localStorage.removeItem("recent-play");
       localStorage.removeItem("JwtAuthToken");
+      history.push("/");
       await dispatch({
         type: "SET_USER",
         user: [],
       });
+      onMobileClose();
       console.log("Handle Logout Function Called...");
-      history.push("/");
     } else {
       history.push("/signin");
     }

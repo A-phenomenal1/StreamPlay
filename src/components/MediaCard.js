@@ -8,15 +8,13 @@ import Typography from "@material-ui/core/Typography";
 import { WhatshotRounded } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 import { Avatar, Grid } from "@material-ui/core";
-import dev from "../api/dev";
 import formatTimestamp from "../config/formatTimestamp";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     border: "none",
     boxShadow: "none",
-    marginRight: "1em",
-    margin: "0.5em 0",
+    margin: "0.5em 0.5em",
     boxSizing: "border-box",
     [theme.breakpoints.down("sm")]: {
       minWidth: 280,

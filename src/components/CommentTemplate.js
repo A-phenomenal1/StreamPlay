@@ -9,6 +9,8 @@ import {
 import { ThumbDownAlt, ThumbUpAlt } from "@material-ui/icons";
 import { useStateValue } from "../config/StateProvider";
 import formatTimestamp from "../config/formatTimestamp";
+import AlertModal from "./AlertModal";
+import AlertBar from "./AlertBar";
 import dev from "../api/dev";
 import "./Comment.css";
 
@@ -170,7 +172,11 @@ export function CommentTemplate(props) {
           <CommentField
             for="reply"
             callback={() => setOpenReply(false)}
-            commentId={props.comment._id}
+            commentId={
+              props.comment._id === undefined
+                ? props.comment.commentId
+                : props.comment._id
+            }
             postId={props.comment.postId}
             refreshCallback={props.refreshCallback}
           />
@@ -183,11 +189,22 @@ export function CommentTemplate(props) {
 export function CommentField(props) {
   const [showBtn, setShowBtn] = useState(false);
   const [comment, setComment] = useState("");
+  const [showModal, setShowModal] = useState({ isShow: false, message: [] });
+  const [showBar, setShowBar] = useState({
+    isShow: false,
+    message: [],
+    severity: "success",
+  });
   const [{ user }, dispatch] = useStateValue();
   console.log("props in commentField: ", props);
 
   const handleComment = (commentId = null) => {
-    if (user.length === 0) alert("You should login first...");
+    console.log("commentId :", commentId);
+    if (user.length === 0)
+      setShowModal({
+        isShow: true,
+        message: ["Whoops!", `You should Login first...`],
+      });
     else {
       const variables = {
         text: comment,
@@ -218,8 +235,16 @@ export function CommentField(props) {
         .then((data) => {
           if (data.success) {
             setComment("");
-            if (commentId !== null) props.callback();
+            setShowBar({
+              isShow: true,
+              message: [`Your comment will be added soon.`],
+              severity: "success",
+            });
             props.refreshCallback(data.result);
+            if (commentId !== null) {
+              console.log("commentField hide");
+              props.callback();
+            }
           } else {
             console.log("error on comment save: ");
           }
@@ -230,6 +255,21 @@ export function CommentField(props) {
   return (
     <>
       <Container component="lg">
+        {showModal.isShow ? (
+          <AlertModal
+            hideModal={() =>
+              setShowModal((prev) => ({ ...prev, isShow: false }))
+            }
+            message={showModal.message}
+          />
+        ) : null}
+        {showBar.isShow ? (
+          <AlertBar
+            hideBar={() => setShowBar((prev) => ({ ...prev, isShow: false }))}
+            message={showBar.message}
+            type={showBar.severity}
+          />
+        ) : null}
         <div
           style={{
             display: "flex",

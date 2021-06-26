@@ -15,22 +15,30 @@ import {
 import { CameraAlt, Create, Delete } from "@material-ui/icons";
 import { useStateValue } from "../config/StateProvider";
 import defaultCover from "../assets/texture.jpeg";
-import axios from "axios";
-import dev from "../api/dev";
-import Dropzone from "react-dropzone";
+import AlertBar from "../components/AlertBar";
 import Loader from "../components/Loader";
+import Dropzone from "react-dropzone";
+import dev from "../api/dev";
+import axios from "axios";
 import "./AccountSetting.css";
 
 const AccountSettings = () => {
   const [{ user }, dispatch] = useStateValue();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [showBar, setShowBar] = useState({
+    isShow: false,
+    message: [],
+    severity: "success",
+  });
   const [values, setValues] = useState({
     firstName: "",
     lastName: "",
     email: "",
     profilePic: null,
     coverPic: null,
+    prevProfilePic: null,
+    prevCoverPic: null,
   });
 
   const handleChange = (event) => {
@@ -51,6 +59,7 @@ const AccountSettings = () => {
       };
       console.log("file:", file);
       formData.append("file", file[0]);
+
       axios
         .post(`${dev.BaseUrl}/uploadprofilepic`, formData, config)
         .then((res) => {
@@ -70,10 +79,19 @@ const AccountSettings = () => {
             }
             setLoading(false);
           } else {
-            alert("failed to save picture on server.");
+            setShowBar({
+              isShow: true,
+              message: [`Failed to save picture on server`],
+              severity: "error",
+            });
           }
         });
-    } else alert("Please Login First!!!");
+    } else
+      setShowBar({
+        isShow: true,
+        message: [`Login First..`],
+        severity: "error",
+      });
   };
 
   const handleSubmit = async () => {
@@ -121,6 +139,8 @@ const AccountSettings = () => {
                 };
                 console.log("updateUser: ", updatedUser);
 
+                //For updating writer of comments
+
                 fetch(`${dev.BaseUrl}/authusers/updatecommentwriter`, {
                   method: "PATCH",
                   headers: {
@@ -140,6 +160,8 @@ const AccountSettings = () => {
                   .catch((err) => {
                     console.log("error: ", err);
                   });
+
+                // For Update the writer of videos writer
 
                 fetch(`${dev.BaseUrl}/authusers/updatevideowriter`, {
                   method: "PATCH",
@@ -161,6 +183,43 @@ const AccountSettings = () => {
                   .catch((err) => {
                     console.log("error: ", err);
                   });
+
+                // Deletion of Pics from cloud.....
+
+                let changedProfile = [];
+
+                if (values.prevCoverPic !== values.coverPic)
+                  changedProfile.push({ fileType: "Cover" });
+                if (values.prevProfilePic !== values.profilePic)
+                  changedProfile.push({ fileType: "Profile" });
+                for (let i = 0; i < changedProfile.length; ++i) {
+                  fetch(`${dev.BaseUrl}/authusers/deleteprofile`, {
+                    method: "PATCH",
+                    headers: {
+                      "auth-token": localStorage.getItem("JwtAuthToken"),
+                      "content-type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      prevProfilePic:
+                        changedProfile[i].fileType === "Profile"
+                          ? values.prevProfilePic
+                          : values.prevCoverPic,
+                    }),
+                  })
+                    .then((res) => res.json())
+                    .then((data) => {
+                      console.log("data from delete: ", data);
+                      if (data.success) {
+                        console.log("deleted successfully");
+                      } else {
+                        console.log("deletion unsuccessfull", data.error);
+                      }
+                    })
+                    .catch((err) =>
+                      console.log("error in deletion profile from cloud:", err)
+                    );
+                }
+
                 dispatch({
                   type: "SET_USER",
                   user: [data],
@@ -195,6 +254,8 @@ const AccountSettings = () => {
           email: data.email,
           profilePic: data.profilePic || null,
           coverPic: data.coverPic || null,
+          prevProfilePic: data.profilePic || null,
+          prevCoverPic: data.coverPic || null,
         });
         setLoading(false);
       })
@@ -208,6 +269,13 @@ const AccountSettings = () => {
       <Container maxWidth="lg" style={{ marginTop: 20, overflow: "hidden" }}>
         {loading ? (
           <Loader type="bars" color="#ffcc33" hgt="calc(100% - 100px)" />
+        ) : null}
+        {showBar.isShow ? (
+          <AlertBar
+            hideBar={() => setShowBar((prev) => ({ ...prev, isShow: false }))}
+            message={showBar.message}
+            type={showBar.severity}
+          />
         ) : null}
         <Grid container spacing={3}>
           <Grid item lg={12} xs={12}>
@@ -302,7 +370,7 @@ const AccountSettings = () => {
                         variant="outlined"
                         helperText={
                           values.firstName === "" && error ? (
-                            <span style={{ color: "red" }}>
+                            <span style={{ color: "#ea4335" }}>
                               *Required Field
                             </span>
                           ) : null
@@ -320,7 +388,7 @@ const AccountSettings = () => {
                         variant="outlined"
                         helperText={
                           values.lastName === "" && error ? (
-                            <span style={{ color: "red" }}>
+                            <span style={{ color: "#ea4335" }}>
                               *Required Field
                             </span>
                           ) : null
@@ -338,7 +406,7 @@ const AccountSettings = () => {
                         variant="outlined"
                         helperText={
                           values.email === "" && error ? (
-                            <span style={{ color: "red" }}>
+                            <span style={{ color: "#ea4335" }}>
                               *Required Field
                             </span>
                           ) : null
@@ -356,7 +424,11 @@ const AccountSettings = () => {
                       }}
                     >
                       <Button
-                        style={{ backgroundColor: "#F6C6EA", height: 40 }}
+                        style={{
+                          backgroundColor: "#2b333f",
+                          color: "#f7f7f7",
+                          height: 40,
+                        }}
                         variant="contained"
                         onClick={() =>
                           setValues((prevState) => ({
@@ -369,7 +441,11 @@ const AccountSettings = () => {
                         Profile
                       </Button>
                       <Button
-                        style={{ backgroundColor: "#F6C6EA", height: 40 }}
+                        style={{
+                          backgroundColor: "#2b333f",
+                          color: "#f7f7f7",
+                          height: 40,
+                        }}
                         variant="contained"
                         onClick={() =>
                           setValues((prevState) => ({

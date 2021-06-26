@@ -16,6 +16,7 @@ import { useStateValue } from "../config/StateProvider";
 import "./UploadVideoForm.css";
 import dev from "../api/dev";
 import Loader from "../components/Loader";
+import AlertModal from "../components/AlertModal";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -41,6 +42,7 @@ const Category = [
 function UploadVideoForm() {
   const classes = useStyles();
   const [{ user }, dispatch] = useStateValue();
+  const [showModal, setShowModal] = useState({ isShow: false, message: [] });
   const [state, setState] = useState({
     filePath: "",
     title: "",
@@ -96,18 +98,28 @@ function UploadVideoForm() {
                   }));
                   setLoading(false);
                 } else {
-                  alert("Error in generating thumbnails.");
+                  setShowModal({
+                    isShow: true,
+                    message: ["Whoops!", `Error in generating thumbnails.`],
+                  });
                 }
               })
               .catch((e) => {
                 console.log("error: ", e);
               });
           } else {
+            setShowModal({
+              isShow: true,
+              message: ["Whoops!", `Failed to save video on server.`],
+            });
             console.log("error in uploading video: ", res.data);
-            alert("failed to save video on server.");
           }
         });
-    } else alert("Please Login First!!!");
+    } else
+      setShowModal({
+        isShow: true,
+        message: ["Whoops!", `You should Login first...`],
+      });
   };
 
   const onUpload = async () => {
@@ -124,7 +136,11 @@ function UploadVideoForm() {
       thumbnail,
     } = state;
     if (title === "" || description === "" || filePath === "") setError(true);
-    else if (user.length === 0) alert("Please Login First!!!");
+    else if (user.length === 0)
+      setShowModal({
+        isShow: true,
+        message: ["Whoops!", `You should Login first...`],
+      });
     else {
       await fetch(`${dev.BaseUrl}/video/uploadvideo`, {
         method: "POST",
@@ -151,10 +167,16 @@ function UploadVideoForm() {
         .then((data) => {
           console.log(data);
           if (data.success) {
-            alert("Video uploaded successful");
+            setShowModal({
+              isShow: true,
+              message: ["Bravo!", `Video uploaded successful, Check it out!`],
+            });
             history.push("/");
           } else {
-            alert(data.error);
+            setShowModal({
+              isShow: true,
+              message: ["Whoops!", `${data.error}`],
+            });
           }
         })
         .catch((err) => {
@@ -182,10 +204,19 @@ function UploadVideoForm() {
         </Alert>
       ) : (
         <Alert severity="error">
-          The video upload feature does not work on smartphone.
+          The video upload feature doesn't work on smartphone, I'll update
+          shortly, sorry for the inconvenience.
         </Alert>
       )}
       <Container component="main" maxWidth="md">
+        {showModal.isShow ? (
+          <AlertModal
+            hideModal={() =>
+              setShowModal((prev) => ({ ...prev, isShow: false }))
+            }
+            message={showModal.message}
+          />
+        ) : null}
         <CssBaseline />
         <div className={classes.paper}>
           <Typography component="h1" variant="h4" className="title">
@@ -208,7 +239,7 @@ function UploadVideoForm() {
                     <Add style={{ width: 40, height: 40 }} />
                   </div>
                   {state.filePath === "" && error ? (
-                    <div style={{ color: "red" }}>*Required Field</div>
+                    <div style={{ color: "#ea4335" }}>*Required Field</div>
                   ) : null}
                 </section>
               )}
@@ -244,7 +275,7 @@ function UploadVideoForm() {
             }
             helperText={
               state.title === "" && error ? (
-                <span style={{ color: "red" }}>*Required Field</span>
+                <span style={{ color: "#ea4335" }}>*Required Field</span>
               ) : null
             }
           />
@@ -266,7 +297,7 @@ function UploadVideoForm() {
             }
             helperText={
               state.description === "" && error ? (
-                <span style={{ color: "red" }}>*Required Field</span>
+                <span style={{ color: "#ea4335" }}>*Required Field</span>
               ) : null
             }
           />
@@ -313,7 +344,6 @@ function UploadVideoForm() {
         </div>
         <Button
           variant="contained"
-          color="primary"
           startIcon={<CloudUpload />}
           className="upload-btn"
           onClick={onUpload}

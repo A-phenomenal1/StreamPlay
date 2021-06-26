@@ -6,6 +6,7 @@ import "./Comment.css";
 function CommentSection(props) {
   return (
     <>
+      {console.log("comment section: ", props)}
       {props.commentList &&
         props.commentList.map(
           (comment, index) =>

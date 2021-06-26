@@ -93,6 +93,9 @@ function App() {
             <Route path="/search">
               <Dashboard page="Search Items" />
             </Route>
+            <Route path="/nodata">
+              <Dashboard page="No Data" />
+            </Route>
             <Route path="/">
               <Dashboard page="Home" />
             </Route>

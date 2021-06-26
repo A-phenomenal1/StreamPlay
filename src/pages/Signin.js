@@ -16,6 +16,8 @@ import { useStateValue } from "../config/StateProvider";
 import logo from "../assets/icons/streamplay3.png";
 import Loader from "../components/Loader";
 import dev from "../api/dev";
+import AlertBar from "../components/AlertBar";
+import AlertModal from "../components/AlertModal";
 
 function Copyright() {
   return (
@@ -43,6 +45,10 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    backgroundColor: "#0c5670",
+    "&:hover": {
+      backgroundColor: "#073c4f !important",
+    },
   },
 }));
 
@@ -53,6 +59,12 @@ export default function SignIn() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [showModal, setShowModal] = useState({ isShow: false, message: [] });
+  const [showBar, setShowBar] = useState({
+    isShow: false,
+    message: [],
+    severity: "success",
+  });
   const [{ user }, dispatch] = useStateValue();
   const history = useHistory();
   const classes = useStyles();
@@ -87,28 +99,39 @@ export default function SignIn() {
           localStorage.removeItem("recent-play");
           localStorage.setItem("JwtAuthToken", data);
           localStorage.setItem("recent-play", JSON.stringify([]));
-          fetch(`${dev.BaseUrl}/authusers`, {
-            method: "GET",
-            headers: {
-              "auth-token": data,
-              "content-type": "application/json",
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              dispatch({
-                type: "SET_USER",
-                user: [data],
-              });
-              setLoading(false);
-              console.log("Logged user: ", data);
-              history.push("/");
-            })
-            .catch((err) => {
-              console.log("Error in jwt code ", err);
-              setLoading(false);
-              alert("Wrong Email or Password!!!");
+          if (typeof data === "object") {
+            setLoading(false);
+            setShowModal({
+              isShow: true,
+              message: [
+                "Whoops",
+                `You have entered a wrong Email or Password, Try again.`,
+              ],
             });
+          } else {
+            fetch(`${dev.BaseUrl}/authusers`, {
+              method: "GET",
+              headers: {
+                "auth-token": data,
+                "content-type": "application/json",
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                dispatch({
+                  type: "SET_USER",
+                  user: [data],
+                });
+                setLoading(false);
+                console.log("Logged user: ", data);
+                history.push("/");
+              })
+              .catch((err) => {
+                console.log("Error in jwt code ", err);
+                setLoading(false);
+                alert("Wrong Email or Password!!!");
+              });
+          }
         })
         .catch((err) => {
           console.log("check", err);
@@ -135,6 +158,21 @@ export default function SignIn() {
         </div>
       ) : null}
       <Container component="main" maxWidth="xs">
+        {showModal.isShow ? (
+          <AlertModal
+            hideModal={() =>
+              setShowModal((prev) => ({ ...prev, isShow: false }))
+            }
+            message={showModal.message}
+          />
+        ) : null}
+        {showBar.isShow ? (
+          <AlertBar
+            hideBar={() => setShowBar((prev) => ({ ...prev, isShow: false }))}
+            message={showBar.message}
+            type={showBar.severity}
+          />
+        ) : null}
         <CssBaseline />
         <div className={classes.paper}>
           <div className="logo_container_signPage">
@@ -171,7 +209,7 @@ export default function SignIn() {
             }
             helperText={
               state.email === "" && error ? (
-                <span style={{ color: "red" }}>*Required Field</span>
+                <span style={{ color: "#ea4335" }}>*Required Field</span>
               ) : null
             }
           />
@@ -193,19 +231,19 @@ export default function SignIn() {
             }
             helperText={
               state.password === "" && error ? (
-                <span style={{ color: "red" }}>*Required Field</span>
+                <span style={{ color: "#ea4335" }}>*Required Field</span>
               ) : null
             }
           />
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+            control={<Checkbox value="remember" style={{ color: "#db6939" }} />}
             label="Remember me"
           />
           <Button
             type="submit"
             fullWidth
-            variant="contained"
             color="primary"
+            variant="contained"
             className={classes.submit}
             onClick={handleLogin}
           >
@@ -213,12 +251,12 @@ export default function SignIn() {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link href="#" variant="body2" style={{ color: "#db6939" }}>
                 Forgot password?
               </Link>
             </Grid>
             <Grid item>
-              <Link href="/signup" variant="body2">
+              <Link href="/signup" variant="body2" style={{ color: "#db6939" }}>
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

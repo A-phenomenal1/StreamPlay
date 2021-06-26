@@ -91,6 +91,9 @@ const Dashboard = (props) => {
       case "Search Items":
         return <SearchItemsPage />;
 
+      case "No Data":
+        return <NoDataPage data="Query Video" />;
+
       default:
         return <Home />;
     }
