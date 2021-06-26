@@ -11,18 +11,18 @@ function makeComment(commentInfo = requiredParam("videoInfo")) {
   return Object.freeze(normalComment);
 
   function validate({
-    author = requiredParam("author"),
+    writer = requiredParam("writer"),
     text = requiredParam("text"),
     postId = requiredParam("postId"),
     replyToId = requiredParam("replayToId"),
     ...otherInfo
   } = {}) {
-    validateParam("author", author);
+    validateParam("writer", writer);
     validateParam("text", text);
     validateParam("postId", postId);
     validateParam("replyToId", replyToId);
     return {
-      author,
+      writer,
       text,
       postId,
       replyToId,
@@ -32,7 +32,7 @@ function makeComment(commentInfo = requiredParam("videoInfo")) {
 
   function validateParam(label, value) {
     switch (label) {
-      case "author":
+      case "writer":
         if (typeof value !== "object") {
           throw new InvalidPropertyError(`A comment's ${label} must a object.`);
         }
@@ -60,9 +60,9 @@ function makeComment(commentInfo = requiredParam("videoInfo")) {
     }
   }
 
-  function normalize({ author, text, postId, replyToId, ...otherInfo }) {
+  function normalize({ writer, text, postId, replyToId, ...otherInfo }) {
     return {
-      author,
+      writer,
       text: upperFirst(text),
       postId,
       replyToId,

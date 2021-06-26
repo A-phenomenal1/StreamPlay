@@ -98,7 +98,6 @@ function makeUserList() {
   async function updateUser({ userId, values }) {
     const db = await database;
     console.log("values: ", values);
-    let result;
     try {
       result = await db.collection("users").updateOne(
         { _id: db.makeId(userId) },

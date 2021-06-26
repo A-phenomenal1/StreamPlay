@@ -65,12 +65,10 @@ function makeCommentList() {
 
       if (comment.likes !== newValue.likes) {
         console.log("Inside if block....");
-        const isPresent = await db
-          .collection("users")
-          .findOne({
-            _id: db.makeId(userId),
-            "likedComments.likes": commentId,
-          });
+        const isPresent = await db.collection("users").findOne({
+          _id: db.makeId(userId),
+          "likedComments.likes": commentId,
+        });
 
         if (isPresent) {
           await db
@@ -90,12 +88,10 @@ function makeCommentList() {
       }
       if (comment.dislikes !== newValue.dislikes) {
         console.log("Inside if block if dislike changes....");
-        const isPresent = await db
-          .collection("users")
-          .findOne({
-            _id: db.makeId(userId),
-            "likedComments.dislikes": commentId,
-          });
+        const isPresent = await db.collection("users").findOne({
+          _id: db.makeId(userId),
+          "likedComments.dislikes": commentId,
+        });
 
         if (isPresent) {
           await db

@@ -2,6 +2,7 @@ const makeHttpError = require("../../helpers/http-error");
 const { decodeToken } = require("../../helpers/json-web-token");
 const userList = require("../../services/user.service");
 const videoList = require("../../services/video.service");
+const cloudinary = require("cloudinary");
 
 function makeAuthUsersEndpointHandler({ userList }) {
   return async function handle(httpRequest) {
@@ -19,6 +20,8 @@ function makeAuthUsersEndpointHandler({ userList }) {
       case "PATCH":
         if (httpRequest.path === "/updateprofile") {
           return updateProfile(httpRequest);
+        } else if (httpRequest.path === "/deleteprofile") {
+          return deleteProfileFromCloud(httpRequest);
         } else if (httpRequest.path === "/updatevideowriter") {
           return updateVideoWriter(httpRequest);
         } else if (httpRequest.path === "/updatecommentwriter")
@@ -91,6 +94,30 @@ function makeAuthUsersEndpointHandler({ userList }) {
     return {
       statusCode: 500,
       data: "user not found",
+    };
+  }
+
+  async function deleteProfileFromCloud(httpRequest) {
+    const userId = decodeToken(httpRequest.user.id);
+    console.log("values: ", httpRequest.body, userId);
+    if (userId !== undefined) {
+      const url = httpRequest.body.prevProfilePic;
+      let params = url.split("/");
+      let publicId = params[params.length - 1].split(".")[0];
+      cloudinary.v2.uploader.destroy(publicId, function (error, result) {
+        console.log(result, error);
+      });
+      return {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        statusCode: 200,
+        data: { success: 200, data: `${url} deleted` },
+      };
+    }
+    return {
+      statusCode: 500,
+      data: { success: 500, error: "file can't deleted" },
     };
   }
 
