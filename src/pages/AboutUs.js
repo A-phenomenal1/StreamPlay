@@ -45,28 +45,31 @@ function AboutUs() {
         <div className="left-cont1">
           <div className="icon-container">
             <div className="icon-box">
+              <a href="https://github.com/A-phenomenal1" alt="github">
               <img
                 src={Github}
                 alt="github"
-                href="https://github.com/A-phenomenal1"
+                
                 className="icon"
-              />
+              /></a>
             </div>
             <div className="icon-box">
+              <a href="https://www.linkedin.com/in/niteshkumar89/" alt="linkedin">
               <img
                 src={LinkedIn}
-                alt="github"
-                href="https://www.linkedin.com/in/niteshkumar89/"
+                alt="linkedin"
+              
                 className="icon"
-              />
+              /></a>
             </div>
             <div className="icon-box">
+              <a href="https://www.instagram.com/a_phenomenal1/" alt="instagram">
               <img
                 src={Instagram}
-                alt="github"
-                href="https://www.instagram.com/a_phenomenal1/"
+                alt="instagram"
+               
                 className="icon"
-              />
+              /></a>
             </div>
           </div>
           <span className="author-name">
